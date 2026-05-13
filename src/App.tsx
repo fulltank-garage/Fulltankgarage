@@ -244,8 +244,8 @@ function App() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#070707] px-4 py-5 text-white">
-      <div className="mx-auto flex min-h-[calc(100dvh-2.5rem)] w-full max-w-xl flex-col gap-5">
+    <main className="min-h-dvh bg-[#070707] px-4 py-3 text-white">
+      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-3">
         {isCheckingMember ? (
           <RegistrationStatusSkeleton />
         ) : phase === 'status' && registeredMember ? (
@@ -531,20 +531,20 @@ function SerialGate({
   serialNumber: string
 }) {
   return (
-    <section className="rounded-[1.75rem] border border-[#2d2d2d] bg-[#181818] p-5 shadow-[0_0_36px_rgba(255,24,20,0.22)]">
-      <form className="space-y-5" onSubmit={onSubmit}>
+    <section className="rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
+      <form className="space-y-4" onSubmit={onSubmit}>
         <img
           alt="FullTank Garage"
-          className="mx-auto h-auto w-64 max-w-[82%] rounded-xl object-cover shadow-[0_16px_42px_rgba(0,0,0,0.42)]"
+          className="mx-auto h-auto w-40 max-w-[62%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
           src={fulltankGarageLogo}
         />
-        <h1 className="text-center text-3xl font-black leading-tight text-[#ff3838] sm:text-4xl">
+        <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
           ลงทะเบียนรับประกันสินค้า
         </h1>
 
         <input
           autoComplete="off"
-          className="h-14 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-lg font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
+          className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-base font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
           onChange={(event) => onSerialChange(event.target.value)}
           placeholder="กรอก Serial Number"
           value={serialNumber}
@@ -563,7 +563,7 @@ function SerialGate({
         </label>
 
         <button
-          className="h-14 w-full rounded-xl bg-gradient-to-r from-[#ff3b3b] to-[#d91605] text-lg font-black text-white shadow-[0_16px_32px_rgba(232,26,13,0.22)] transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-65"
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff3b3b] to-[#d91605] text-base font-black text-white shadow-[0_14px_28px_rgba(232,26,13,0.2)] transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-65"
           disabled={isChecking}
           type="submit"
         >
@@ -818,20 +818,22 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
 
 function CompanyFooter() {
   return (
-    <footer className="mt-auto rounded-[1.25rem] border border-white/12 bg-[#101010] px-4 py-6 text-center text-white/74">
+    <footer className="mt-auto rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
       <img
         alt="FullTank Garage"
-        className="mx-auto mb-4 h-auto w-36 rounded-lg object-cover"
+        className="mx-auto mb-2 h-auto w-20 rounded-lg object-cover"
         src={fulltankGarageLogo}
       />
-      <p className="text-lg font-black text-white">FullTank Garage Co., LTD</p>
-      <p className="mt-3 text-base font-semibold leading-7">
+      <p className="text-sm font-black leading-5 text-white">
+        FullTank Garage Co., LTD
+      </p>
+      <p className="mt-1.5 text-xs font-semibold leading-5">
         1464/1 ซอยกาญจนาภิเษก 008 แขวงบางแค เขตบางแค กรุงเทพฯ 10160
       </p>
-      <p className="text-base font-semibold leading-7">
+      <p className="text-xs font-semibold leading-5">
         โทรศัพท์: <a className="text-[#8fd1ff]" href="tel:0814452949">081 445 2949</a>
       </p>
-      <p className="text-base font-semibold leading-7">
+      <p className="text-xs font-semibold leading-5">
         เวลาเปิดทำการ: เปิดทุกวัน (หยุดวันพฤหัสบดี) เวลา 10:00 - 20:00 น.
       </p>
     </footer>
