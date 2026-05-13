@@ -93,6 +93,25 @@ export const registerWarranty = async (payload: WarrantyRegisterPayload) => {
   return data
 }
 
+export const linkWarrantyBySerial = async (
+  serialNumber: string,
+  lineIdentity?: LineIdentity,
+) => {
+  const lineUserId = lineIdentity?.lineUserId?.trim()
+  if (!lineUserId) {
+    return null
+  }
+
+  const { data } = await api.post<WarrantyRegisterResponse>('/warranty/link', {
+    serialNumber,
+    lineUserId,
+    lineDisplayName: lineIdentity?.lineDisplayName,
+    linePictureUrl: lineIdentity?.linePictureUrl,
+  })
+
+  return data
+}
+
 export const getWarrantyStatus = async (lineIdentity?: LineIdentity) => {
   const lineUserId = lineIdentity?.lineUserId?.trim()
   if (!lineUserId) {

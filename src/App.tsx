@@ -14,6 +14,7 @@ import {
 import {
   checkSerialNumber,
   getWarrantyStatus,
+  linkWarrantyBySerial,
   registerWarranty,
   type WarrantyRegistration,
   type WarrantyRegisterPayload,
@@ -158,6 +159,18 @@ function App() {
       const result = await checkSerialNumber(normalizedSerial)
 
       if (result.status !== 'available') {
+        if (result.status === 'used') {
+          const identity = await getLineIdentity()
+          const linked = await linkWarrantyBySerial(normalizedSerial, identity)
+          if (linked?.data) {
+            setLineIdentity(identity)
+            setWarrantyRegistration(linked.data)
+            setPhase('warranty-status')
+            showNotice('พบข้อมูลเดิมและผูกบัตรรับประกันกับ LINE นี้แล้ว', 'success')
+            return
+          }
+        }
+
         showNotice(
           result.status === 'used'
             ? 'Serial Number นี้ถูกลงทะเบียนรับประกันแล้ว'
