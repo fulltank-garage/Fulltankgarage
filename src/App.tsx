@@ -289,7 +289,7 @@ function App() {
         )}
 
         {notice ? <Notice message={notice} tone={noticeTone} /> : null}
-        <CompanyFooter fillAvailable={phase === 'serial'} />
+        <CompanyFooter />
       </div>
     </main>
   )
@@ -531,11 +531,11 @@ function SerialGate({
   serialNumber: string
 }) {
   return (
-    <section className="rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
-      <form className="space-y-4" onSubmit={onSubmit}>
+    <section className="flex flex-[1.4] rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
+      <form className="flex min-h-0 w-full flex-col justify-center gap-4" onSubmit={onSubmit}>
         <img
           alt="FullTank Garage"
-          className="mx-auto h-auto w-40 max-w-[62%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
+          className="mx-auto h-auto w-[clamp(10rem,25dvh,17rem)] max-w-[70%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
           src={fulltankGarageLogo}
         />
         <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
@@ -820,26 +820,10 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
   )
 }
 
-function CompanyFooter({ fillAvailable = false }: { fillAvailable?: boolean }) {
+function CompanyFooter() {
   return (
-    <footer
-      className={[
-        'rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74',
-        fillAvailable
-          ? 'flex flex-1 flex-col'
-          : '',
-      ].join(' ')}
-    >
-      {fillAvailable ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center pb-2">
-          <img
-            alt="FullTank Garage"
-            className="h-full max-h-[clamp(4.5rem,22dvh,11rem)] w-auto max-w-[78%] rounded-lg object-contain"
-            src={fulltankGarageLogo}
-          />
-        </div>
-      ) : null}
-      <div className="shrink-0">
+    <footer className="rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
+      <div>
         <p className="text-sm font-black leading-5 text-white">
           FullTank Garage Co., LTD
         </p>
