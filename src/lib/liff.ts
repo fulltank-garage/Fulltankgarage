@@ -35,7 +35,7 @@ const getLaunchParams = () => {
   return params
 }
 
-const getEntryView = () => getLaunchParams().get('view')?.trim().toLowerCase()
+export const getEntryView = () => getLaunchParams().get('view')?.trim().toLowerCase()
 const getRegisterLiffId = () => import.meta.env.VITE_LIFF_ID?.trim()
 const getCardLiffId = () =>
   import.meta.env.VITE_CARD_LIFF_ID?.trim() ||

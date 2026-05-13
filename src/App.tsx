@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { ChangeEvent, FormEvent } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
+  getEntryView,
   getLineIdentity,
   isLiffLoginRedirectError,
   openProfileLiff,
@@ -85,6 +86,7 @@ function App() {
   const [isCheckingMember, setIsCheckingMember] = useState(true)
   const [isCheckingSerial, setIsCheckingSerial] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const isCardEntry = getEntryView() === 'card'
 
   const normalizedSerial = useMemo(
     () => serialInput.trim().toUpperCase(),
@@ -281,7 +283,7 @@ function App() {
     <main className="min-h-dvh bg-[#070707] p-3 text-white">
       <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-2">
         {isCheckingMember ? (
-          <RegistrationStatusSkeleton />
+          isCardEntry ? <WarrantyStatusSkeleton /> : <RegistrationGateSkeleton />
         ) : phase === 'warranty-status' && warrantyRegistration ? (
           <WarrantyStatusPage
             lineIdentity={lineIdentity}
@@ -397,7 +399,7 @@ const formatThaiDate = (value?: string | null) => {
   }).format(date)
 }
 
-function RegistrationStatusSkeleton() {
+function RegistrationGateSkeleton() {
   return (
     <section className="rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-[clamp(1rem,2.2dvh,1.25rem)] shadow-[0_0_30px_rgba(255,24,20,0.2)]">
       <div className="flex w-full flex-col gap-[clamp(0.9rem,1.8dvh,1.15rem)]">
@@ -411,6 +413,54 @@ function RegistrationStatusSkeleton() {
           </div>
           <div className="h-12 w-full rounded-xl skeleton-shimmer" />
         </div>
+      </div>
+    </section>
+  )
+}
+
+function WarrantyStatusSkeleton() {
+  return (
+    <section className="min-h-[calc(100dvh-2.5rem)] overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="size-11 shrink-0 rounded-xl border border-white/12 skeleton-shimmer" />
+          <div className="min-w-0 flex-1">
+            <div className="h-4 w-32 rounded-xl skeleton-shimmer" />
+            <div className="mt-2 h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
+          </div>
+        </div>
+      </header>
+
+      <div className="space-y-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
+        <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="h-7 w-44 max-w-full rounded-xl skeleton-shimmer" />
+              <div className="mt-3 h-4 w-56 max-w-full rounded-xl skeleton-shimmer" />
+            </div>
+            <div className="h-6 w-20 shrink-0 rounded-full skeleton-shimmer" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 6 }, (_, index) => (
+            <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3" key={index}>
+              <div className="h-3 w-20 rounded-xl skeleton-shimmer" />
+              <div className="mt-3 h-5 w-full rounded-xl skeleton-shimmer" />
+            </div>
+          ))}
+        </div>
+
+        <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
+          <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
+          <div className="mt-3 h-5 w-3/4 rounded-xl skeleton-shimmer" />
+        </div>
+        <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
+          <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
+          <div className="mt-3 h-5 w-2/3 rounded-xl skeleton-shimmer" />
+        </div>
+
+        <div className="h-12 w-full rounded-xl skeleton-shimmer" />
       </div>
     </section>
   )
