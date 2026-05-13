@@ -826,22 +826,33 @@ function CompanyFooter({ fillAvailable = false }: { fillAvailable?: boolean }) {
       className={[
         'rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74',
         fillAvailable
-          ? 'flex flex-1 flex-col justify-center'
+          ? 'flex flex-1 flex-col'
           : '',
       ].join(' ')}
     >
-      <p className="text-sm font-black leading-5 text-white">
-        FullTank Garage Co., LTD
-      </p>
-      <p className="mt-1.5 text-xs font-semibold leading-5">
-        1464/1 ซอยกาญจนาภิเษก 008 แขวงบางแค เขตบางแค กรุงเทพฯ 10160
-      </p>
-      <p className="text-xs font-semibold leading-5">
-        โทรศัพท์: <a className="text-[#8fd1ff]" href="tel:0814452949">081 445 2949</a>
-      </p>
-      <p className="text-xs font-semibold leading-5">
-        เวลาเปิดทำการ: เปิดทุกวัน (หยุดวันพฤหัสบดี) เวลา 10:00 - 20:00 น.
-      </p>
+      {fillAvailable ? (
+        <div className="flex min-h-0 flex-1 items-center justify-center pb-2">
+          <img
+            alt="FullTank Garage"
+            className="h-full max-h-[clamp(4.5rem,22dvh,11rem)] w-auto max-w-[78%] rounded-lg object-contain"
+            src={fulltankGarageLogo}
+          />
+        </div>
+      ) : null}
+      <div className="shrink-0">
+        <p className="text-sm font-black leading-5 text-white">
+          FullTank Garage Co., LTD
+        </p>
+        <p className="mt-1.5 text-xs font-semibold leading-5">
+          1464/1 ซอยกาญจนาภิเษก 008 แขวงบางแค เขตบางแค กรุงเทพฯ 10160
+        </p>
+        <p className="text-xs font-semibold leading-5">
+          โทรศัพท์: <a className="text-[#8fd1ff]" href="tel:0814452949">081 445 2949</a>
+        </p>
+        <p className="text-xs font-semibold leading-5">
+          เวลาเปิดทำการ: เปิดทุกวัน (หยุดวันพฤหัสบดี) เวลา 10:00 - 20:00 น.
+        </p>
+      </div>
     </footer>
   )
 }
