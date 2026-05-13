@@ -819,11 +819,6 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
 function CompanyFooter() {
   return (
     <footer className="rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
-      <img
-        alt="FullTank Garage"
-        className="mx-auto mb-2 h-auto w-20 rounded-lg object-cover"
-        src={fulltankGarageLogo}
-      />
       <p className="text-sm font-black leading-5 text-white">
         FullTank Garage Co., LTD
       </p>
