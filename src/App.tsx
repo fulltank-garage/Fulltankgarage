@@ -245,7 +245,7 @@ function App() {
 
   return (
     <main className="min-h-dvh bg-[#070707] px-4 py-3 text-white">
-      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-3">
+      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-2">
         {isCheckingMember ? (
           <RegistrationStatusSkeleton />
         ) : phase === 'status' && registeredMember ? (
@@ -818,7 +818,7 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
 
 function CompanyFooter() {
   return (
-    <footer className="mt-auto rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
+    <footer className="rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
       <img
         alt="FullTank Garage"
         className="mx-auto mb-2 h-auto w-20 rounded-lg object-cover"
