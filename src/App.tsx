@@ -399,18 +399,18 @@ const formatThaiDate = (value?: string | null) => {
 
 function RegistrationStatusSkeleton() {
   return (
-    <section className="min-h-[calc(100dvh-2.5rem)] rounded-[1.5rem] bg-[#fbf7f0] p-4 text-[#4b3527]">
-      <div className="flex items-center gap-3 border-b border-[#ead8c4] pb-4">
-        <div className="size-12 animate-pulse rounded-full bg-[#f1dfcd]" />
-        <div className="min-w-0 flex-1">
-          <div className="h-4 w-28 animate-pulse rounded-full bg-[#f1dfcd]" />
-          <div className="mt-2 h-5 w-36 animate-pulse rounded-full bg-[#f1dfcd]" />
+    <section className="rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-[clamp(1rem,2.2dvh,1.25rem)] shadow-[0_0_30px_rgba(255,24,20,0.2)]">
+      <div className="flex w-full flex-col gap-[clamp(0.9rem,1.8dvh,1.15rem)]">
+        <div className="mx-auto aspect-square w-[clamp(8.75rem,22dvh,12.5rem)] max-w-[58%] rounded-xl skeleton-shimmer" />
+        <div className="space-y-[clamp(0.8rem,1.55dvh,1rem)]">
+          <div className="mx-auto h-8 w-4/5 rounded-xl skeleton-shimmer sm:h-9" />
+          <div className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] skeleton-shimmer" />
+          <div className="flex items-center gap-2.5">
+            <div className="size-5 shrink-0 rounded border border-white/20 skeleton-shimmer" />
+            <div className="h-5 min-w-0 flex-1 rounded-xl skeleton-shimmer" />
+          </div>
+          <div className="h-12 w-full rounded-xl skeleton-shimmer" />
         </div>
-      </div>
-      <div className="mt-5 space-y-3">
-        <div className="h-24 animate-pulse rounded-2xl bg-[#fffaf3]" />
-        <div className="h-16 animate-pulse rounded-2xl bg-[#fffaf3]" />
-        <div className="h-16 animate-pulse rounded-2xl bg-[#fffaf3]" />
       </div>
     </section>
   )
