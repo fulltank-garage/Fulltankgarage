@@ -244,7 +244,7 @@ function App() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#070707] px-4 py-3 text-white">
+    <main className="min-h-dvh bg-[#070707] p-3 text-white">
       <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-2">
         {isCheckingMember ? (
           <RegistrationStatusSkeleton />
