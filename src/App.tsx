@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { ChangeEvent, FormEvent } from 'react'
 import { useMemo, useState } from 'react'
 import { getLineIdentity, isLiffLoginRedirectError } from './lib/liff'
+import fulltankGarageLogo from './assets/fulltank-garage-logo.jpg'
 import {
   checkSerialNumber,
   registerWarranty,
@@ -261,6 +262,11 @@ function SerialGate({
   return (
     <section className="rounded-[1.75rem] border border-[#2d2d2d] bg-[#181818] p-5 shadow-[0_0_36px_rgba(255,24,20,0.22)]">
       <form className="space-y-5" onSubmit={onSubmit}>
+        <img
+          alt="FullTank Garage"
+          className="mx-auto h-auto w-64 max-w-[82%] rounded-xl object-cover shadow-[0_16px_42px_rgba(0,0,0,0.42)]"
+          src={fulltankGarageLogo}
+        />
         <h1 className="text-center text-3xl font-black leading-tight text-[#ff3838] sm:text-4xl">
           ลงทะเบียนรับประกันสินค้า
         </h1>
@@ -540,6 +546,11 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
 function CompanyFooter() {
   return (
     <footer className="mt-auto rounded-[1.25rem] border border-white/12 bg-[#101010] px-4 py-6 text-center text-white/74">
+      <img
+        alt="FullTank Garage"
+        className="mx-auto mb-4 h-auto w-44 rounded-lg object-cover"
+        src={fulltankGarageLogo}
+      />
       <p className="text-lg font-black text-white">FullTank Garage Co., LTD</p>
       <p className="mt-3 text-base font-semibold leading-7">
         1464/1 ซอยกาญจนาภิเษก 008 แขวงบางแค เขตบางแค กรุงเทพฯ 10160
