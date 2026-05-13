@@ -567,7 +567,7 @@ function SerialGate({
           disabled={isChecking}
           type="submit"
         >
-          {isChecking ? 'กำลังตรวจสอบ...' : 'ตรวจสอบหมายเลข'}
+          {isChecking ? 'กำลังตรวจสอบ...' : 'ลงทะเบียนรับประกัน'}
         </button>
       </form>
     </section>
