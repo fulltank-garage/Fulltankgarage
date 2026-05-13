@@ -13,12 +13,14 @@ import {
 } from './services/authService'
 import {
   checkSerialNumber,
+  getWarrantyStatus,
   registerWarranty,
+  type WarrantyRegistration,
   type WarrantyRegisterPayload,
 } from './services/warrantyService'
 import type { LineIdentity } from './lib/liff'
 
-type Phase = 'serial' | 'form' | 'success' | 'status'
+type Phase = 'serial' | 'form' | 'success' | 'status' | 'warranty-status'
 type NoticeTone = 'info' | 'success' | 'error'
 type StatusTone = 'approved' | 'pending' | 'rejected'
 
@@ -73,6 +75,8 @@ function App() {
   const [form, setForm] = useState<RegistrationForm>(initialForm)
   const [registeredMember, setRegisteredMember] =
     useState<RegisteredMember | null>(null)
+  const [warrantyRegistration, setWarrantyRegistration] =
+    useState<WarrantyRegistration | null>(null)
   const [lineIdentity, setLineIdentity] = useState<LineIdentity | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState('')
@@ -99,6 +103,20 @@ function App() {
 
       if (!identity.lineUserId && !identity.lineIdToken) {
         return
+      }
+
+      try {
+        const warranty = await getWarrantyStatus(identity)
+        if (warranty?.id) {
+          setWarrantyRegistration(warranty)
+          setPhase('warranty-status')
+          setNotice('')
+          return
+        }
+      } catch (error) {
+        if (!axios.isAxiosError(error) || error.response?.status !== 404) {
+          throw error
+        }
       }
 
       const member = await getRegisteredMember(identity)
@@ -227,12 +245,13 @@ function App() {
       setIsSubmitting(true)
       setNotice('')
       const lineIdentity = await getLineIdentity()
-      await registerWarranty({
+      const result = await registerWarranty({
         ...form,
         phone: onlyDigits(form.phone),
         ...lineIdentity,
       })
-      setPhase('success')
+      setWarrantyRegistration(result.data)
+      setPhase('warranty-status')
       showNotice('ลงทะเบียนรับประกันสินค้าเรียบร้อยแล้ว', 'success')
     } catch (error) {
       if (isLiffLoginRedirectError(error)) {
@@ -250,6 +269,12 @@ function App() {
       <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-2">
         {isCheckingMember ? (
           <RegistrationStatusSkeleton />
+        ) : phase === 'warranty-status' && warrantyRegistration ? (
+          <WarrantyStatusPage
+            lineIdentity={lineIdentity}
+            onRefresh={loadRegistrationStatus}
+            registration={warrantyRegistration}
+          />
         ) : phase === 'status' && registeredMember ? (
           <RegistrationStatusPage
             lineIdentity={lineIdentity}
@@ -342,6 +367,23 @@ const getStatusMeta = (status?: string) => {
 
 const getDisplayValue = (value?: string) => value?.trim() || '-'
 
+const formatThaiDate = (value?: string | null) => {
+  if (!value) {
+    return '-'
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('th-TH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
 function RegistrationStatusSkeleton() {
   return (
     <section className="min-h-[calc(100dvh-2.5rem)] rounded-[1.5rem] bg-[#fbf7f0] p-4 text-[#4b3527]">
@@ -358,6 +400,122 @@ function RegistrationStatusSkeleton() {
         <div className="h-16 animate-pulse rounded-2xl bg-[#fffaf3]" />
       </div>
     </section>
+  )
+}
+
+function WarrantyStatusPage({
+  lineIdentity,
+  onRefresh,
+  registration,
+}: {
+  lineIdentity: LineIdentity | null
+  onRefresh: () => Promise<void>
+  registration: WarrantyRegistration
+}) {
+  const displayName =
+    registration.customerName ||
+    lineIdentity?.lineDisplayName ||
+    'FullTank Customer'
+
+  const fields = [
+    { label: 'Serial Number', value: registration.serialNumber },
+    { label: 'เบอร์โทร', value: registration.phone },
+    { label: 'รุ่นรถ', value: registration.carModel },
+    { label: 'ทะเบียนรถ', value: registration.licensePlate },
+    {
+      label: 'ฟิล์ม',
+      value: [registration.filmBrand, registration.filmModel]
+        .filter(Boolean)
+        .join(' '),
+    },
+    { label: 'วันที่ติดตั้ง', value: formatThaiDate(registration.installDate) },
+    { label: 'สาขาที่ติดตั้ง', value: registration.branch },
+    { label: 'ผู้ติดตั้ง', value: registration.installerName },
+  ]
+
+  return (
+    <section className="min-h-[calc(100dvh-2.5rem)] overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
+        <div className="flex items-center gap-3">
+          <img
+            alt=""
+            className="size-11 shrink-0 rounded-xl border border-white/12 object-cover"
+            src={lineIdentity?.linePictureUrl || fulltankGarageLogo}
+          />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-[#ff4038]">
+              FullTank Garage
+            </p>
+            <h1 className="truncate text-lg font-bold">
+              บัตรรับประกันสินค้า
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      <div className="space-y-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
+        <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-xl font-bold">{displayName}</p>
+              <p className="mt-1 text-sm leading-6 text-white/58">
+                ลงทะเบียนรับประกันสินค้าเรียบร้อยแล้ว
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-emerald-400/12 px-3 py-1 text-xs font-bold text-emerald-300">
+              ใช้งานได้
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {fields.slice(0, 6).map((field) => (
+            <WarrantyField
+              key={field.label}
+              label={field.label}
+              value={field.value}
+            />
+          ))}
+        </div>
+
+        {fields.slice(6).map((field) => (
+          <WarrantyField
+            key={field.label}
+            label={field.label}
+            value={field.value}
+          />
+        ))}
+
+        {registration.remarks ? (
+          <WarrantyField label="หมายเหตุ" value={registration.remarks} />
+        ) : null}
+
+        <button
+          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff4038] to-[#df160d] text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,58,53,0.24)]"
+          onClick={() => void onRefresh()}
+          type="button"
+        >
+          อัปเดตข้อมูลบัตร
+        </button>
+      </div>
+    </section>
+  )
+}
+
+function WarrantyField({
+  label,
+  value,
+}: {
+  label: string
+  value?: string
+}) {
+  return (
+    <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
+      <p className="truncate text-xs font-semibold text-white/42">{label}</p>
+      <p className="mt-1 break-words text-sm font-bold leading-6 text-white">
+        {getDisplayValue(value)}
+      </p>
+    </div>
   )
 }
 

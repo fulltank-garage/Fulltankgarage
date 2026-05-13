@@ -22,6 +22,33 @@ export type WarrantyRegisterPayload = LineIdentity & {
   remarks: string
 }
 
+export type WarrantyRegistration = {
+  id: number
+  uuid?: string
+  serialNumber: string
+  customerName: string
+  phone: string
+  carModel: string
+  licensePlate: string
+  filmBrand: string
+  filmModel: string
+  installDate?: string | null
+  branch: string
+  installerName?: string
+  receiptFile?: string
+  remarks?: string
+  lineUserId?: string
+  lineDisplayName?: string
+  linePictureUrl?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export type WarrantyRegisterResponse = {
+  data: WarrantyRegistration
+  richMenuSynced?: boolean
+}
+
 const appendOptional = (formData: FormData, key: string, value?: string) => {
   if (value?.trim()) {
     formData.append(key, value.trim())
@@ -59,6 +86,22 @@ export const registerWarranty = async (payload: WarrantyRegisterPayload) => {
     formData.append('receiptFile', payload.receiptFile)
   }
 
-  const { data } = await api.post('/warranty/register', formData)
+  const { data } = await api.post<WarrantyRegisterResponse>(
+    '/warranty/register',
+    formData,
+  )
+  return data
+}
+
+export const getWarrantyStatus = async (lineIdentity?: LineIdentity) => {
+  const lineUserId = lineIdentity?.lineUserId?.trim()
+  if (!lineUserId) {
+    return null
+  }
+
+  const { data } = await api.get<WarrantyRegistration>('/warranty/status', {
+    params: { lineUserId },
+  })
+
   return data
 }
