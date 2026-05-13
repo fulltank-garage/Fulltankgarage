@@ -531,17 +531,15 @@ function SerialGate({
   serialNumber: string
 }) {
   return (
-    <section className="flex flex-[1.4] rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
-      <form className="flex min-h-0 w-full flex-col gap-4" onSubmit={onSubmit}>
-        <div className="flex min-h-0 flex-1 items-center justify-center">
-          <img
-            alt="FullTank Garage"
-            className="h-full max-h-[clamp(11rem,42dvh,28rem)] w-auto max-w-[76%] rounded-xl object-contain shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
-            src={fulltankGarageLogo}
-          />
-        </div>
+    <section className="flex flex-[1.08] rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
+      <form className="flex min-h-0 w-full flex-col justify-center gap-[clamp(0.75rem,1.7dvh,1rem)]" onSubmit={onSubmit}>
+        <img
+          alt="FullTank Garage"
+          className="mx-auto aspect-square w-[clamp(10rem,27dvh,15.5rem)] max-w-[66%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
+          src={fulltankGarageLogo}
+        />
 
-        <div className="shrink-0 space-y-4">
+        <div className="shrink-0 space-y-[clamp(0.75rem,1.7dvh,1rem)]">
           <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
             ลงทะเบียนรับประกันสินค้า
           </h1>
