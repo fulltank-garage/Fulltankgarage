@@ -22,6 +22,14 @@ export type RegisteredMember = {
   id?: string
   status?: 'pending' | 'approved' | 'rejected' | string
   lineUserId?: string
+  firstName?: string
+  lastName?: string
+  nickname?: string
+  phone?: string
+  citizenId?: string
+  shopPageUrl?: string
+  storefrontImage?: string
+  storefrontImageUrl?: string
 }
 
 const appendOptional = (formData: FormData, key: string, value?: string) => {

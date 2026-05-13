@@ -1,16 +1,26 @@
 import axios from 'axios'
 import type { ChangeEvent, FormEvent } from 'react'
-import { useMemo, useState } from 'react'
-import { getLineIdentity, isLiffLoginRedirectError } from './lib/liff'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  getLineIdentity,
+  isLiffLoginRedirectError,
+  openProfileLiff,
+} from './lib/liff'
 import fulltankGarageLogo from './assets/fulltank-garage-logo.jpg'
+import {
+  getRegisteredMember,
+  type RegisteredMember,
+} from './services/authService'
 import {
   checkSerialNumber,
   registerWarranty,
   type WarrantyRegisterPayload,
 } from './services/warrantyService'
+import type { LineIdentity } from './lib/liff'
 
-type Phase = 'serial' | 'form' | 'success'
+type Phase = 'serial' | 'form' | 'success' | 'status'
 type NoticeTone = 'info' | 'success' | 'error'
+type StatusTone = 'approved' | 'pending' | 'rejected'
 
 type RegistrationForm = Omit<
   WarrantyRegisterPayload,
@@ -59,9 +69,13 @@ function App() {
   const [serialInput, setSerialInput] = useState('')
   const [isConsentAccepted, setIsConsentAccepted] = useState(false)
   const [form, setForm] = useState<RegistrationForm>(initialForm)
+  const [registeredMember, setRegisteredMember] =
+    useState<RegisteredMember | null>(null)
+  const [lineIdentity, setLineIdentity] = useState<LineIdentity | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState('')
   const [noticeTone, setNoticeTone] = useState<NoticeTone>('info')
+  const [isCheckingMember, setIsCheckingMember] = useState(true)
   const [isCheckingSerial, setIsCheckingSerial] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -74,6 +88,35 @@ function App() {
     setNotice(message)
     setNoticeTone(tone)
   }
+
+  const loadRegistrationStatus = useCallback(async () => {
+    try {
+      setIsCheckingMember(true)
+      const identity = await getLineIdentity()
+      setLineIdentity(identity)
+
+      if (!identity.lineUserId && !identity.lineIdToken) {
+        return
+      }
+
+      const member = await getRegisteredMember(identity)
+      if (member.id) {
+        setRegisteredMember(member)
+        setPhase('status')
+        setNotice('')
+      }
+    } catch (error) {
+      if (isLiffLoginRedirectError(error)) {
+        return
+      }
+    } finally {
+      setIsCheckingMember(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void Promise.resolve().then(loadRegistrationStatus)
+  }, [loadRegistrationStatus])
 
   const handleSerialSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -203,7 +246,15 @@ function App() {
   return (
     <main className="min-h-dvh bg-[#070707] px-4 py-5 text-white">
       <div className="mx-auto flex min-h-[calc(100dvh-2.5rem)] w-full max-w-xl flex-col gap-5">
-        {phase === 'serial' ? (
+        {isCheckingMember ? (
+          <RegistrationStatusSkeleton />
+        ) : phase === 'status' && registeredMember ? (
+          <RegistrationStatusPage
+            lineIdentity={lineIdentity}
+            member={registeredMember}
+            onRefresh={loadRegistrationStatus}
+          />
+        ) : phase === 'serial' ? (
           <SerialGate
             isChecking={isCheckingSerial}
             isConsentAccepted={isConsentAccepted}
@@ -241,6 +292,226 @@ function App() {
         <CompanyFooter />
       </div>
     </main>
+  )
+}
+
+const getStatusTone = (status?: string): StatusTone => {
+  if (status === 'approved') {
+    return 'approved'
+  }
+  if (status === 'rejected') {
+    return 'rejected'
+  }
+
+  return 'pending'
+}
+
+const getStatusMeta = (status?: string) => {
+  const tone = getStatusTone(status)
+
+  if (tone === 'approved') {
+    return {
+      label: 'ลงทะเบียนแล้ว',
+      title: 'ข้อมูลของคุณได้รับการอนุมัติแล้ว',
+      description: 'สามารถใช้งานเมนูสมาชิกและตรวจสอบสิทธิ์จาก Rich menu ได้ทันที',
+      badgeClassName: 'bg-emerald-100 text-emerald-700',
+      panelClassName: 'border-emerald-200 bg-emerald-50',
+    }
+  }
+
+  if (tone === 'rejected') {
+    return {
+      label: 'ต้องแก้ไขข้อมูล',
+      title: 'ข้อมูลยังไม่ผ่านการตรวจสอบ',
+      description: 'กรุณาติดต่อร้านผ่าน LINE เพื่อสอบถามรายละเอียดและแก้ไขข้อมูล',
+      badgeClassName: 'bg-[#fff1eb] text-[#b4543b]',
+      panelClassName: 'border-[#f0c8bb] bg-[#fff1eb]',
+    }
+  }
+
+  return {
+    label: 'รอตรวจสอบ',
+    title: 'ร้านได้รับข้อมูลการลงทะเบียนแล้ว',
+    description: 'กรุณารอตรวจสอบข้อมูล ระบบจะอัปเดตสถานะให้อัตโนมัติหลังร้านตรวจเสร็จ',
+    badgeClassName: 'bg-[#f7e9d8] text-[#765236]',
+    panelClassName: 'border-[#ead8c4] bg-[#fffaf3]',
+  }
+}
+
+const getDisplayValue = (value?: string) => value?.trim() || '-'
+
+function RegistrationStatusSkeleton() {
+  return (
+    <section className="min-h-[calc(100dvh-2.5rem)] rounded-[1.5rem] bg-[#fbf7f0] p-4 text-[#4b3527]">
+      <div className="flex items-center gap-3 border-b border-[#ead8c4] pb-4">
+        <div className="size-12 animate-pulse rounded-full bg-[#f1dfcd]" />
+        <div className="min-w-0 flex-1">
+          <div className="h-4 w-28 animate-pulse rounded-full bg-[#f1dfcd]" />
+          <div className="mt-2 h-5 w-36 animate-pulse rounded-full bg-[#f1dfcd]" />
+        </div>
+      </div>
+      <div className="mt-5 space-y-3">
+        <div className="h-24 animate-pulse rounded-2xl bg-[#fffaf3]" />
+        <div className="h-16 animate-pulse rounded-2xl bg-[#fffaf3]" />
+        <div className="h-16 animate-pulse rounded-2xl bg-[#fffaf3]" />
+      </div>
+    </section>
+  )
+}
+
+function RegistrationStatusPage({
+  lineIdentity,
+  member,
+  onRefresh,
+}: {
+  lineIdentity: LineIdentity | null
+  member: RegisteredMember
+  onRefresh: () => Promise<void>
+}) {
+  const statusMeta = getStatusMeta(member.status)
+  const fullName = [member.firstName, member.lastName]
+    .filter(Boolean)
+    .join(' ')
+  const displayName =
+    fullName || lineIdentity?.lineDisplayName || member.nickname || 'FullTank Member'
+  const avatarUrl = lineIdentity?.linePictureUrl
+  const storefrontImage = member.storefrontImageUrl || member.storefrontImage
+  const fields = [
+    { label: 'ชื่อ', value: member.firstName },
+    { label: 'นามสกุล', value: member.lastName },
+    { label: 'ชื่อเล่น', value: member.nickname },
+    { label: 'เบอร์โทร', value: member.phone },
+    { label: 'ลิงก์ร้าน/เพจ', value: member.shopPageUrl, href: member.shopPageUrl },
+  ]
+
+  return (
+    <section className="min-h-[calc(100dvh-2.5rem)] overflow-hidden rounded-[1.5rem] bg-[#fbf7f0] text-[#4b3527] shadow-[0_18px_46px_rgba(0,0,0,0.18)]">
+      <header className="sticky top-0 z-10 border-b border-[#ead8c4] bg-[#fffaf3]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
+        <div className="flex items-center gap-3">
+          <img
+            alt=""
+            className="size-11 shrink-0 rounded-full border border-[#ead8c4] object-cover shadow-sm"
+            src={avatarUrl || fulltankGarageLogo}
+          />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-[#8a705b]">
+              FullTank Garage
+            </p>
+            <h1 className="truncate text-lg font-semibold text-[#4b3527]">
+              สถานะการลงทะเบียน
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      <div className="space-y-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
+        <div className="rounded-2xl border border-[#ead8c4] bg-[#fffaf3] p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-xl font-bold text-[#4b3527]">
+                {displayName}
+              </p>
+              <p className="mt-1 text-sm leading-6 text-[#8a705b]">
+                เปิดจาก LINE Rich menu แล้วพบข้อมูลเดิมของคุณ
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${statusMeta.badgeClassName}`}
+            >
+              {statusMeta.label}
+            </span>
+          </div>
+        </div>
+
+        <div className={`rounded-2xl border px-4 py-5 text-center ${statusMeta.panelClassName}`}>
+          <p className="text-base font-semibold text-[#4b3527]">
+            {statusMeta.title}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-[#8a705b]">
+            {statusMeta.description}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {fields.slice(0, 2).map((field) => (
+            <StatusField key={field.label} label={field.label} value={field.value} />
+          ))}
+        </div>
+
+        {fields.slice(2).map((field) => (
+          <StatusField
+            href={field.href}
+            key={field.label}
+            label={field.label}
+            value={field.value}
+          />
+        ))}
+
+        <div className="block text-sm font-medium text-[#4b3527]">
+          รูปหน้าร้าน
+          <div className="mt-1.5 rounded-2xl border border-[#ead8c4] bg-[#fffaf3] p-3">
+            {storefrontImage ? (
+              <img
+                alt="รูปหน้าร้าน"
+                className="aspect-[4/3] w-full rounded-xl object-cover"
+                src={storefrontImage}
+              />
+            ) : (
+              <div className="grid aspect-[4/3] w-full place-items-center rounded-xl bg-[#f7e9d8] px-5 text-center text-sm leading-6 text-[#8a705b]">
+                ยังไม่มีรูปหน้าร้าน
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            className="h-12 rounded-xl border border-[#ead8c4] bg-[#fffaf3] text-sm font-bold text-[#765236]"
+            onClick={() => void onRefresh()}
+            type="button"
+          >
+            อัปเดตสถานะ
+          </button>
+          <button
+            className="h-12 rounded-xl bg-[#765236] text-sm font-bold text-white"
+            onClick={openProfileLiff}
+            type="button"
+          >
+            เปิดหน้าโปรไฟล์
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function StatusField({
+  href,
+  label,
+  value,
+}: {
+  href?: string
+  label: string
+  value?: string
+}) {
+  return (
+    <div className="block text-sm font-medium text-[#4b3527]">
+      {label}
+      <div className="mt-1.5 flex min-h-12 w-full items-center rounded-xl border border-[#ead8c4] bg-[#fffaf3] px-4 text-base text-[#4b3527]">
+        {href && value ? (
+          <a
+            className="break-all text-[#765236] underline decoration-[#9a704d]/35 underline-offset-4"
+            href={href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {value}
+          </a>
+        ) : (
+          <span className="break-words">{getDisplayValue(value)}</span>
+        )}
+      </div>
+    </div>
   )
 }
 
