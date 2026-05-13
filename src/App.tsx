@@ -550,14 +550,16 @@ function SerialGate({
           value={serialNumber}
         />
 
-        <label className="flex items-start gap-3 text-base font-semibold leading-7 text-white">
+        <label className="flex items-center gap-2.5 text-[clamp(0.78rem,3.45vw,1rem)] font-semibold leading-6 text-white">
           <input
             checked={isConsentAccepted}
-            className="mt-1 size-6 shrink-0 rounded border-white/35 accent-[#ff2f2b]"
+            className="size-5 shrink-0 rounded border-white/35 accent-[#ff2f2b]"
             onChange={(event) => onConsentChange(event.target.checked)}
             type="checkbox"
           />
-          <span>ข้าพเจ้ายินยอมให้เก็บข้อมูลเพื่อการรับประกันสินค้า</span>
+          <span className="whitespace-nowrap">
+            ข้าพเจ้ายินยอมให้เก็บข้อมูลเพื่อการรับประกันสินค้า
+          </span>
         </label>
 
         <button
@@ -819,7 +821,7 @@ function CompanyFooter() {
     <footer className="mt-auto rounded-[1.25rem] border border-white/12 bg-[#101010] px-4 py-6 text-center text-white/74">
       <img
         alt="FullTank Garage"
-        className="mx-auto mb-4 h-auto w-44 rounded-lg object-cover"
+        className="mx-auto mb-4 h-auto w-36 rounded-lg object-cover"
         src={fulltankGarageLogo}
       />
       <p className="text-lg font-black text-white">FullTank Garage Co., LTD</p>
