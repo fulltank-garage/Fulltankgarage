@@ -331,7 +331,9 @@ function App() {
         )}
 
         {notice ? <Notice message={notice} tone={noticeTone} /> : null}
-        <CompanyFooter fillAvailable={phase === 'serial'} />
+        {phase === 'warranty-status' ? null : (
+          <CompanyFooter fillAvailable={phase === 'serial'} />
+        )}
       </div>
     </main>
   )
@@ -420,7 +422,7 @@ function RegistrationGateSkeleton() {
 
 function WarrantyStatusSkeleton() {
   return (
-    <section className="min-h-[calc(100dvh-2.5rem)] overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+    <section className="flex min-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
         <div className="flex items-center gap-3">
           <div className="size-11 shrink-0 rounded-xl border border-white/12 skeleton-shimmer" />
@@ -431,7 +433,7 @@ function WarrantyStatusSkeleton() {
         </div>
       </header>
 
-      <div className="space-y-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -531,8 +533,8 @@ function WarrantyStatusPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {fields.slice(0, 6).map((field) => (
+        <div className="grid flex-1 grid-cols-2 gap-3">
+          {fields.map((field) => (
             <WarrantyField
               key={field.label}
               label={field.label}
@@ -540,14 +542,6 @@ function WarrantyStatusPage({
             />
           ))}
         </div>
-
-        {fields.slice(6).map((field) => (
-          <WarrantyField
-            key={field.label}
-            label={field.label}
-            value={field.value}
-          />
-        ))}
 
         {registration.remarks ? (
           <WarrantyField label="หมายเหตุ" value={registration.remarks} />
@@ -573,9 +567,9 @@ function WarrantyField({
   value?: string
 }) {
   return (
-    <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
+    <div className="flex min-h-[5.25rem] min-w-0 flex-col justify-center rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
       <p className="truncate text-xs font-semibold text-white/42">{label}</p>
-      <p className="mt-1 break-words text-sm font-bold leading-6 text-white">
+      <p className="mt-1 break-words text-base font-bold leading-6 text-white">
         {getDisplayValue(value)}
       </p>
     </div>
