@@ -118,9 +118,9 @@ export const getWarrantyStatus = async (lineIdentity?: LineIdentity) => {
     return null
   }
 
-  const { data } = await api.get<WarrantyRegistration>('/warranty/status', {
+  const { data } = await api.get<WarrantyRegistration | WarrantyRegisterResponse>('/warranty/status', {
     params: { lineUserId },
   })
 
-  return data
+  return 'data' in data ? data.data : data
 }

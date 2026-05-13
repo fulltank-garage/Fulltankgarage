@@ -16,12 +16,42 @@ class LiffLoginRedirectError extends Error {
 
 let initPromise: Promise<void> | null = null
 
-const getLiffId = () => import.meta.env.VITE_LIFF_ID?.trim()
+const getLaunchParams = () => {
+  const params = new URLSearchParams(window.location.search)
+  const state = params.get('liff.state')
+
+  if (!state) {
+    return params
+  }
+
+  const stateQuery = state.startsWith('?') ? state.slice(1) : state
+  const stateParams = new URLSearchParams(stateQuery)
+  stateParams.forEach((value, key) => {
+    if (!params.has(key)) {
+      params.set(key, value)
+    }
+  })
+
+  return params
+}
+
+const getEntryView = () => getLaunchParams().get('view')?.trim().toLowerCase()
+const getRegisterLiffId = () => import.meta.env.VITE_LIFF_ID?.trim()
+const getCardLiffId = () =>
+  import.meta.env.VITE_CARD_LIFF_ID?.trim() ||
+  import.meta.env.VITE_PROFILE_LIFF_ID?.trim()
+const getLiffId = () => (getEntryView() === 'card' ? getCardLiffId() : getRegisterLiffId())
 const getProfileLiffId = () =>
-  import.meta.env.VITE_PROFILE_LIFF_ID?.trim() || '2010003223-KfDmnya6'
-const getLiffUrl = (liffId: string) => `https://liff.line.me/${liffId}`
-const getCleanRedirectUri = () =>
-  `${window.location.origin}${window.location.pathname}`
+  getCardLiffId() || '2010003223-KfDmnya6'
+const getLiffUrl = (liffId: string, view?: string) => {
+  const query = view ? `?view=${encodeURIComponent(view)}` : ''
+  return `https://liff.line.me/${liffId}${query}`
+}
+const getCleanRedirectUri = () => {
+  const view = getEntryView()
+  const query = view ? `?view=${encodeURIComponent(view)}` : ''
+  return `${window.location.origin}${window.location.pathname}${query}`
+}
 const tokenExpiryLeewaySeconds = 60
 
 const decodeJwtPayload = (token: string) => {
@@ -93,7 +123,7 @@ export const refreshLineLogin = async () => {
 }
 
 export const openProfileLiff = () => {
-  window.location.replace(getLiffUrl(getProfileLiffId()))
+  window.location.replace(getLiffUrl(getProfileLiffId(), 'card'))
 }
 
 export const closeLiffWindow = async () => {
