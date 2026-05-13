@@ -289,7 +289,7 @@ function App() {
         )}
 
         {notice ? <Notice message={notice} tone={noticeTone} /> : null}
-        <CompanyFooter />
+        <CompanyFooter fillAvailable={phase === 'serial'} />
       </div>
     </main>
   )
@@ -820,9 +820,16 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
   )
 }
 
-function CompanyFooter() {
+function CompanyFooter({ fillAvailable = false }: { fillAvailable?: boolean }) {
   return (
-    <footer className="rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
+    <footer
+      className={[
+        'rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74',
+        fillAvailable
+          ? 'flex flex-1 flex-col justify-center'
+          : '',
+      ].join(' ')}
+    >
       <p className="text-sm font-black leading-5 text-white">
         FullTank Garage Co., LTD
       </p>
