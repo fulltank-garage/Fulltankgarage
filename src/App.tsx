@@ -43,6 +43,8 @@ const initialForm: RegistrationForm = {
 }
 
 const onlyDigits = (value: string) => value.replace(/\D/g, '')
+const onlyEnglishLettersAndDigits = (value: string) =>
+  value.replace(/[^a-zA-Z0-9]/g, '')
 
 const getInputClass = (hasError?: boolean) =>
   [
@@ -547,11 +549,11 @@ function SerialGate({
           <input
             autoComplete="off"
             className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-base font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
-            inputMode="numeric"
+            inputMode="text"
             onChange={(event) =>
-              onSerialChange(event.target.value.replace(/\D/g, ''))
+              onSerialChange(onlyEnglishLettersAndDigits(event.target.value))
             }
-            pattern="[0-9]*"
+            pattern="[A-Za-z0-9]*"
             placeholder="กรอก Serial Number"
             value={serialNumber}
           />
