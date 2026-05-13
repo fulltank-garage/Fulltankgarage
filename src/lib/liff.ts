@@ -40,9 +40,9 @@ const getRegisterLiffId = () => import.meta.env.VITE_LIFF_ID?.trim()
 const getCardLiffId = () =>
   import.meta.env.VITE_CARD_LIFF_ID?.trim() ||
   import.meta.env.VITE_PROFILE_LIFF_ID?.trim()
-const getLiffId = () => (getEntryView() === 'card' ? getCardLiffId() : getRegisterLiffId())
+const getLiffId = () => getRegisterLiffId()
 const getProfileLiffId = () =>
-  getCardLiffId() || '2010003223-KfDmnya6'
+  getRegisterLiffId() || getCardLiffId() || '2010003223-KfDmnya6'
 const getLiffUrl = (liffId: string, view?: string) => {
   const query = view ? `?view=${encodeURIComponent(view)}` : ''
   return `https://liff.line.me/${liffId}${query}`
