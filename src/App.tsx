@@ -532,47 +532,52 @@ function SerialGate({
 }) {
   return (
     <section className="flex flex-[1.4] rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-4 shadow-[0_0_30px_rgba(255,24,20,0.2)]">
-      <form className="flex min-h-0 w-full flex-col justify-center gap-4" onSubmit={onSubmit}>
-        <img
-          alt="FullTank Garage"
-          className="mx-auto h-auto w-[clamp(10rem,25dvh,17rem)] max-w-[70%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
-          src={fulltankGarageLogo}
-        />
-        <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
-          ลงทะเบียนรับประกันสินค้า
-        </h1>
-
-        <input
-          autoComplete="off"
-          className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-base font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
-          inputMode="numeric"
-          onChange={(event) =>
-            onSerialChange(event.target.value.replace(/\D/g, ''))
-          }
-          pattern="[0-9]*"
-          placeholder="กรอก Serial Number"
-          value={serialNumber}
-        />
-
-        <label className="flex items-center gap-2.5 text-[clamp(0.78rem,3.45vw,1rem)] font-semibold leading-6 text-white">
-          <input
-            checked={isConsentAccepted}
-            className="size-5 shrink-0 rounded border-white/35 accent-[#ff2f2b]"
-            onChange={(event) => onConsentChange(event.target.checked)}
-            type="checkbox"
+      <form className="flex min-h-0 w-full flex-col gap-4" onSubmit={onSubmit}>
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          <img
+            alt="FullTank Garage"
+            className="h-full max-h-[clamp(11rem,42dvh,28rem)] w-auto max-w-[76%] rounded-xl object-contain shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
+            src={fulltankGarageLogo}
           />
-          <span className="whitespace-nowrap">
-            ข้าพเจ้ายินยอมให้เก็บข้อมูลเพื่อการรับประกันสินค้า
-          </span>
-        </label>
+        </div>
 
-        <button
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff3b3b] to-[#d91605] text-base font-black text-white shadow-[0_14px_28px_rgba(232,26,13,0.2)] transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-65"
-          disabled={isChecking}
-          type="submit"
-        >
-          {isChecking ? 'กำลังตรวจสอบ...' : 'ลงทะเบียนรับประกัน'}
-        </button>
+        <div className="shrink-0 space-y-4">
+          <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
+            ลงทะเบียนรับประกันสินค้า
+          </h1>
+
+          <input
+            autoComplete="off"
+            className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-base font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
+            inputMode="numeric"
+            onChange={(event) =>
+              onSerialChange(event.target.value.replace(/\D/g, ''))
+            }
+            pattern="[0-9]*"
+            placeholder="กรอก Serial Number"
+            value={serialNumber}
+          />
+
+          <label className="flex items-center gap-2.5 text-[clamp(0.78rem,3.45vw,1rem)] font-semibold leading-6 text-white">
+            <input
+              checked={isConsentAccepted}
+              className="size-5 shrink-0 rounded border-white/35 accent-[#ff2f2b]"
+              onChange={(event) => onConsentChange(event.target.checked)}
+              type="checkbox"
+            />
+            <span className="whitespace-nowrap">
+              ข้าพเจ้ายินยอมให้เก็บข้อมูลเพื่อการรับประกันสินค้า
+            </span>
+          </label>
+
+          <button
+            className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff3b3b] to-[#d91605] text-base font-black text-white shadow-[0_14px_28px_rgba(232,26,13,0.2)] transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-65"
+            disabled={isChecking}
+            type="submit"
+          >
+            {isChecking ? 'กำลังตรวจสอบ...' : 'ลงทะเบียนรับประกัน'}
+          </button>
+        </div>
       </form>
     </section>
   )
