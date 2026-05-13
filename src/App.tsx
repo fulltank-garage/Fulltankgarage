@@ -545,7 +545,11 @@ function SerialGate({
         <input
           autoComplete="off"
           className="h-12 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-4 text-base font-semibold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/45 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
-          onChange={(event) => onSerialChange(event.target.value)}
+          inputMode="numeric"
+          onChange={(event) =>
+            onSerialChange(event.target.value.replace(/\D/g, ''))
+          }
+          pattern="[0-9]*"
           placeholder="กรอก Serial Number"
           value={serialNumber}
         />
