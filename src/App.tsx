@@ -291,7 +291,7 @@ function App() {
         )}
 
         {notice ? <Notice message={notice} tone={noticeTone} /> : null}
-        <CompanyFooter />
+        <CompanyFooter fillAvailable={phase === 'serial'} />
       </div>
     </main>
   )
@@ -533,18 +533,18 @@ function SerialGate({
   serialNumber: string
 }) {
   return (
-    <section className="flex flex-[1.04] rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-[clamp(1rem,2.2dvh,1.25rem)] shadow-[0_0_30px_rgba(255,24,20,0.2)]">
+    <section className="rounded-[1.5rem] border border-[#2d2d2d] bg-[#181818] p-[clamp(1rem,2.2dvh,1.25rem)] shadow-[0_0_30px_rgba(255,24,20,0.2)]">
       <form
-        className="flex min-h-0 w-full flex-col justify-center gap-[clamp(1rem,2.1dvh,1.35rem)]"
+        className="flex w-full flex-col gap-[clamp(0.9rem,1.8dvh,1.15rem)]"
         onSubmit={onSubmit}
       >
         <img
           alt="FullTank Garage"
-          className="mx-auto aspect-square w-[clamp(9.5rem,24dvh,14rem)] max-w-[64%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
+          className="mx-auto aspect-square w-[clamp(8.75rem,22dvh,12.5rem)] max-w-[58%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
           src={fulltankGarageLogo}
         />
 
-        <div className="shrink-0 space-y-[clamp(0.85rem,1.8dvh,1.1rem)]">
+        <div className="space-y-[clamp(0.8rem,1.55dvh,1rem)]">
           <h1 className="text-center text-2xl font-black leading-tight text-[#ff3838] sm:text-3xl">
             ลงทะเบียนรับประกันสินค้า
           </h1>
@@ -828,20 +828,61 @@ function Notice({ message, tone }: { message: string; tone: NoticeTone }) {
   )
 }
 
-function CompanyFooter() {
+function CompanyFooter({ fillAvailable = false }: { fillAvailable?: boolean }) {
   return (
-    <footer className="rounded-[1rem] border border-white/12 bg-[#101010] px-4 py-3 text-center text-white/74">
-      <div>
-        <p className="text-sm font-black leading-5 text-white">
+    <footer
+      className={[
+        'rounded-[1rem] border border-white/12 bg-[#101010] px-4 text-center text-white/74',
+        fillAvailable
+          ? 'flex flex-1 py-[clamp(1rem,3dvh,2rem)]'
+          : 'py-3',
+      ].join(' ')}
+    >
+      <div
+        className={
+          fillAvailable
+            ? 'flex min-h-0 w-full flex-1 flex-col justify-evenly'
+            : ''
+        }
+      >
+        <p
+          className={[
+            'font-black text-white',
+            fillAvailable
+              ? 'text-[clamp(1.25rem,5.1vw,1.8rem)] leading-tight'
+              : 'text-sm leading-5',
+          ].join(' ')}
+        >
           FullTank Garage Co., LTD
         </p>
-        <p className="mt-1.5 text-xs font-semibold leading-5">
+        <p
+          className={[
+            'font-semibold',
+            fillAvailable
+              ? 'text-[clamp(0.9rem,3.75vw,1.18rem)] leading-[1.75]'
+              : 'mt-1.5 text-xs leading-5',
+          ].join(' ')}
+        >
           1464/1 ซอยกาญจนาภิเษก 008 แขวงบางแค เขตบางแค กรุงเทพฯ 10160
         </p>
-        <p className="text-xs font-semibold leading-5">
+        <p
+          className={[
+            'font-semibold',
+            fillAvailable
+              ? 'text-[clamp(0.9rem,3.75vw,1.18rem)] leading-[1.75]'
+              : 'text-xs leading-5',
+          ].join(' ')}
+        >
           โทรศัพท์: <a className="text-[#8fd1ff]" href="tel:0814452949">081 445 2949</a>
         </p>
-        <p className="text-xs font-semibold leading-5">
+        <p
+          className={[
+            'font-semibold',
+            fillAvailable
+              ? 'text-[clamp(0.9rem,3.75vw,1.18rem)] leading-[1.75]'
+              : 'text-xs leading-5',
+          ].join(' ')}
+        >
           เวลาเปิดทำการ: เปิดทุกวัน (หยุดวันพฤหัสบดี) เวลา 10:00 - 20:00 น.
         </p>
       </div>
