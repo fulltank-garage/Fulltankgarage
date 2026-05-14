@@ -759,7 +759,7 @@ function WarrantyVehicleCard({
         <div className="relative flex min-h-0 flex-1 flex-col justify-between">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
+              <p className="text-xs font-black uppercase tracking-normal text-white/58">
                 FullTank Garage
               </p>
               <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
@@ -783,10 +783,10 @@ function WarrantyVehicleCard({
 
             <div className="min-w-0">
               <div className="min-w-0">
-                <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
+                <p className="text-[0.65rem] font-black uppercase tracking-normal text-white/45">
                   Serial Number
                 </p>
-                <p className="truncate text-base font-black tracking-wide text-white">
+                <p className="truncate text-base font-black tracking-normal text-white">
                   {registration.serialNumber}
                 </p>
               </div>
