@@ -8,6 +8,7 @@ import {
   openProfileLiff,
 } from './lib/liff'
 import fulltankGarageLogo from './assets/fulltank-garage-logo.jpg'
+import warrantyCardBackground from './assets/warranty-card-bg.png'
 import {
   getRegisteredMember,
   type RegisteredMember,
@@ -620,17 +621,44 @@ function WarrantyStatusPage({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
-        <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-xl font-bold">{displayName}</p>
-              <p className="mt-1 text-sm leading-6 text-white/58">
-                มีบัตรรับประกัน {warrantyCount} ใบในบัญชีนี้
-              </p>
+        <div
+          className="relative aspect-[667/374] overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] bg-cover bg-center p-4 shadow-[0_16px_38px_rgba(255,42,35,0.16)]"
+          style={{ backgroundImage: `url(${warrantyCardBackground})` }}
+        >
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.68),rgba(0,0,0,0.1)_54%,rgba(0,0,0,0.62))]" />
+          <div className="relative flex h-full flex-col justify-between">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
+                  FullTank Garage
+                </p>
+                <h2 className="mt-1 truncate text-2xl font-black leading-tight text-white">
+                  บัตรรับประกันสินค้า
+                </h2>
+              </div>
+              <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
+                ใช้งานได้
+              </span>
             </div>
-            <span className="shrink-0 rounded-full bg-emerald-400/12 px-3 py-1 text-xs font-bold text-emerald-300">
-              ใช้งานได้
-            </span>
+
+            <div className="min-w-0">
+              <p className="truncate text-xl font-black text-white">
+                {displayName}
+              </p>
+              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
+                    Serial Number
+                  </p>
+                  <p className="truncate text-base font-black tracking-wide text-white">
+                    {activeRegistration.serialNumber}
+                  </p>
+                </div>
+                <p className="rounded-full border border-white/16 bg-black/24 px-3 py-1 text-xs font-black text-white/78">
+                  {warrantyCount} ใบ
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
