@@ -46,6 +46,7 @@ export type WarrantyRegistration = {
 
 export type WarrantyRegisterResponse = {
   data: WarrantyRegistration
+  items?: WarrantyRegistration[]
   richMenuSynced?: boolean
 }
 
@@ -123,4 +124,21 @@ export const getWarrantyStatus = async (lineIdentity?: LineIdentity) => {
   })
 
   return 'data' in data ? data.data : data
+}
+
+export const getWarrantyRegistrations = async (lineIdentity?: LineIdentity) => {
+  const lineUserId = lineIdentity?.lineUserId?.trim()
+  if (!lineUserId) {
+    return []
+  }
+
+  const { data } = await api.get<WarrantyRegistration | WarrantyRegisterResponse>('/warranty/status', {
+    params: { lineUserId },
+  })
+
+  if ('items' in data && Array.isArray(data.items)) {
+    return data.items
+  }
+
+  return 'data' in data ? [data.data] : [data]
 }

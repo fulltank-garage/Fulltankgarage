@@ -14,7 +14,7 @@ import {
 } from './services/authService'
 import {
   checkSerialNumber,
-  getWarrantyStatus,
+  getWarrantyRegistrations,
   linkWarrantyBySerial,
   registerWarranty,
   type WarrantyRegistration,
@@ -79,12 +79,16 @@ function App() {
     useState<RegisteredMember | null>(null)
   const [warrantyRegistration, setWarrantyRegistration] =
     useState<WarrantyRegistration | null>(null)
+  const [warrantyRegistrations, setWarrantyRegistrations] = useState<
+    WarrantyRegistration[]
+  >([])
   const [lineIdentity, setLineIdentity] = useState<LineIdentity | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState('')
   const [noticeTone, setNoticeTone] = useState<NoticeTone>('info')
   const [isCheckingMember, setIsCheckingMember] = useState(true)
   const [isCheckingSerial, setIsCheckingSerial] = useState(false)
+  const [isCheckingWalletSerial, setIsCheckingWalletSerial] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isCardEntry = getEntryView() === 'card'
 
@@ -109,9 +113,10 @@ function App() {
       }
 
       try {
-        const warranty = await getWarrantyStatus(identity)
-        if (warranty?.id) {
-          setWarrantyRegistration(warranty)
+        const warranties = await getWarrantyRegistrations(identity)
+        if (warranties.length > 0) {
+          setWarrantyRegistrations(warranties)
+          setWarrantyRegistration(warranties[0])
           setPhase('warranty-status')
           setNotice('')
           return
@@ -165,8 +170,10 @@ function App() {
           const identity = await getLineIdentity()
           const linked = await linkWarrantyBySerial(normalizedSerial, identity)
           if (linked?.data) {
+            const warranties = await getWarrantyRegistrations(identity)
             setLineIdentity(identity)
             setWarrantyRegistration(linked.data)
+            setWarrantyRegistrations(warranties.length > 0 ? warranties : [linked.data])
             setPhase('warranty-status')
             showNotice('พบข้อมูลเดิมและผูกบัตรรับประกันกับ LINE นี้แล้ว', 'success')
             return
@@ -189,6 +196,65 @@ function App() {
       showNotice(getApiErrorMessage(error), 'error')
     } finally {
       setIsCheckingSerial(false)
+    }
+  }
+
+  const handleWalletSerialSubmit = async (serialNumber: string) => {
+    const normalizedWalletSerial = onlyEnglishLettersAndDigits(serialNumber)
+      .trim()
+      .toUpperCase()
+    if (!normalizedWalletSerial) {
+      showNotice('กรุณากรอก Serial Number', 'error')
+      return
+    }
+
+    try {
+      setIsCheckingWalletSerial(true)
+      setNotice('')
+      const result = await checkSerialNumber(normalizedWalletSerial)
+
+      if (result.status !== 'available') {
+        if (result.status === 'used') {
+          const identity = await getLineIdentity()
+          const linked = await linkWarrantyBySerial(normalizedWalletSerial, identity)
+          if (linked?.data) {
+            const warranties = await getWarrantyRegistrations(identity)
+            setLineIdentity(identity)
+            setWarrantyRegistrations(warranties.length > 0 ? warranties : [linked.data])
+            setWarrantyRegistration(linked.data)
+            setPhase('warranty-status')
+            showNotice('พบบัตรเดิมและอัปเดตรายการให้แล้ว', 'success')
+            return
+          }
+        }
+
+        showNotice(
+          result.status === 'used'
+            ? 'Serial Number นี้ถูกลงทะเบียนรับประกันแล้ว'
+            : 'ไม่พบ Serial Number นี้ กรุณาตรวจสอบหมายเลขอีกครั้ง',
+          'error',
+        )
+        return
+      }
+
+      const latestWarranty = warrantyRegistrations[0] ?? warrantyRegistration
+      setForm({
+        ...initialForm,
+        serialNumber: normalizedWalletSerial,
+        customerName: latestWarranty?.customerName ?? '',
+        phone: latestWarranty?.phone ?? '',
+        branch: latestWarranty?.branch ?? '',
+      })
+      setPhase('form')
+      showNotice('ตรวจสอบหมายเลขสำเร็จ กรุณากรอกข้อมูลรถ/ฟิล์ม', 'success')
+    } catch (error) {
+      if (isLiffLoginRedirectError(error)) {
+        return
+      }
+
+      showNotice(getApiErrorMessage(error), 'error')
+    } finally {
+      setIsCheckingWalletSerial(false)
     }
   }
 
@@ -266,6 +332,10 @@ function App() {
         ...lineIdentity,
       })
       setWarrantyRegistration(result.data)
+      setWarrantyRegistrations((current) => [
+        result.data,
+        ...current.filter((item) => item.id !== result.data.id),
+      ])
       setPhase('warranty-status')
       showNotice('ลงทะเบียนรับประกันสินค้าเรียบร้อยแล้ว', 'success')
     } catch (error) {
@@ -286,9 +356,13 @@ function App() {
           isCardEntry ? <WarrantyStatusSkeleton /> : <RegistrationGateSkeleton />
         ) : phase === 'warranty-status' && warrantyRegistration ? (
           <WarrantyStatusPage
+            isCheckingSerial={isCheckingWalletSerial}
+            key={warrantyRegistration.id}
             lineIdentity={lineIdentity}
+            onAddSerial={handleWalletSerialSubmit}
             onRefresh={loadRegistrationStatus}
-            registration={warrantyRegistration}
+            registrations={warrantyRegistrations}
+            selectedRegistration={warrantyRegistration}
           />
         ) : phase === 'status' && registeredMember ? (
           <RegistrationStatusPage
@@ -469,37 +543,64 @@ function WarrantyStatusSkeleton() {
 }
 
 function WarrantyStatusPage({
+  isCheckingSerial,
   lineIdentity,
+  onAddSerial,
   onRefresh,
-  registration,
+  registrations,
+  selectedRegistration,
 }: {
+  isCheckingSerial: boolean
   lineIdentity: LineIdentity | null
+  onAddSerial: (serialNumber: string) => Promise<void>
   onRefresh: () => Promise<void>
-  registration: WarrantyRegistration
+  registrations: WarrantyRegistration[]
+  selectedRegistration: WarrantyRegistration
 }) {
+  const [selectedId, setSelectedId] = useState(selectedRegistration.id)
+  const [isAddingSerial, setIsAddingSerial] = useState(false)
+  const [walletSerialInput, setWalletSerialInput] = useState('')
+  const activeRegistration =
+    registrations.find((item) => item.id === selectedId) ||
+    selectedRegistration ||
+    registrations[0]
+
   const displayName =
-    registration.customerName ||
+    activeRegistration.customerName ||
     lineIdentity?.lineDisplayName ||
     'FullTank Customer'
+  const warrantyCount = Math.max(registrations.length, 1)
+  const selectedVehicleTitle =
+    activeRegistration.licensePlate ||
+    activeRegistration.carModel ||
+    activeRegistration.serialNumber
 
   const fields = [
-    { label: 'Serial Number', value: registration.serialNumber },
-    { label: 'เบอร์โทร', value: registration.phone },
-    { label: 'รุ่นรถ', value: registration.carModel },
-    { label: 'ทะเบียนรถ', value: registration.licensePlate },
+    { label: 'Serial Number', value: activeRegistration.serialNumber },
+    { label: 'เบอร์โทร', value: activeRegistration.phone },
+    { label: 'รุ่นรถ', value: activeRegistration.carModel },
+    { label: 'ทะเบียนรถ', value: activeRegistration.licensePlate },
     {
       label: 'ฟิล์ม',
-      value: [registration.filmBrand, registration.filmModel]
+      value: [activeRegistration.filmBrand, activeRegistration.filmModel]
         .filter(Boolean)
         .join(' '),
     },
-    { label: 'วันที่ติดตั้ง', value: formatThaiDate(registration.installDate) },
-    { label: 'สาขาที่ติดตั้ง', value: registration.branch },
-    { label: 'ผู้ติดตั้ง', value: registration.installerName },
+    {
+      label: 'วันที่ติดตั้ง',
+      value: formatThaiDate(activeRegistration.installDate),
+    },
+    { label: 'สาขาที่ติดตั้ง', value: activeRegistration.branch },
+    { label: 'ผู้ติดตั้ง', value: activeRegistration.installerName },
   ]
+  const handleAddSerial = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    await onAddSerial(walletSerialInput)
+    setWalletSerialInput('')
+  }
 
   return (
-    <section className="min-h-[calc(100dvh-2.5rem)] overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+    <section className="flex min-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
         <div className="flex items-center gap-3">
           <img
@@ -518,13 +619,13 @@ function WarrantyStatusPage({
         </div>
       </header>
 
-      <div className="space-y-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
         <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-xl font-bold">{displayName}</p>
               <p className="mt-1 text-sm leading-6 text-white/58">
-                ลงทะเบียนรับประกันสินค้าเรียบร้อยแล้ว
+                มีบัตรรับประกัน {warrantyCount} ใบในบัญชีนี้
               </p>
             </div>
             <span className="shrink-0 rounded-full bg-emerald-400/12 px-3 py-1 text-xs font-bold text-emerald-300">
@@ -533,7 +634,86 @@ function WarrantyStatusPage({
           </div>
         </div>
 
-        <div className="grid flex-1 grid-cols-2 gap-3">
+        {registrations.length > 1 ? (
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+            {registrations.map((item, index) => {
+              const isSelected = item.id === activeRegistration.id
+              const vehicleTitle =
+                item.licensePlate || item.carModel || `คันที่ ${index + 1}`
+
+              return (
+                <button
+                  className={[
+                    'min-w-[10.75rem] rounded-2xl border p-3 text-left transition',
+                    isSelected
+                      ? 'border-[#ff4038] bg-[#251211] shadow-[0_12px_30px_rgba(255,58,53,0.18)]'
+                      : 'border-white/10 bg-[#0d0d0d]',
+                  ].join(' ')}
+                  key={item.id}
+                  onClick={() => setSelectedId(item.id)}
+                  type="button"
+                >
+                  <p className="truncate text-sm font-black text-white">
+                    {vehicleTitle}
+                  </p>
+                  <p className="mt-1 truncate text-xs font-semibold text-white/48">
+                    {item.filmBrand || 'FullTank'} {item.filmModel || ''}
+                  </p>
+                  <p className="mt-2 truncate text-xs font-bold text-[#ff625d]">
+                    {item.serialNumber}
+                  </p>
+                </button>
+              )
+            })}
+          </div>
+        ) : null}
+
+        <div className="rounded-2xl border border-white/10 bg-[#0b0b0b] p-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-white/42">บัตรที่เลือก</p>
+              <p className="truncate text-lg font-black text-white">
+                {selectedVehicleTitle}
+              </p>
+            </div>
+            <button
+              className="shrink-0 rounded-xl border border-[#ff4038]/45 px-3 py-2 text-xs font-black text-[#ff625d]"
+              onClick={() => setIsAddingSerial((current) => !current)}
+              type="button"
+            >
+              + เพิ่มบัตร
+            </button>
+          </div>
+
+          {isAddingSerial ? (
+            <form
+              className="mb-3 grid gap-2 rounded-xl border border-white/10 bg-[#151515] p-3"
+              onSubmit={handleAddSerial}
+            >
+              <input
+                autoComplete="off"
+                className="h-11 w-full rounded-xl border border-white/14 bg-[#0e0e0e] px-3 text-base font-bold uppercase tracking-wide text-white outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-white/42 focus:border-[#ff3a35] focus:ring-4 focus:ring-[#ff3a35]/16"
+                inputMode="text"
+                onChange={(event) =>
+                  setWalletSerialInput(
+                    onlyEnglishLettersAndDigits(event.target.value),
+                  )
+                }
+                pattern="[A-Za-z0-9]*"
+                placeholder="กรอก Serial Number เพิ่ม"
+                value={walletSerialInput}
+              />
+              <button
+                className="h-11 rounded-xl bg-gradient-to-r from-[#ff4038] to-[#df160d] text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-65"
+                disabled={isCheckingSerial}
+                type="submit"
+              >
+                {isCheckingSerial ? 'กำลังตรวจสอบ...' : 'ตรวจสอบและเพิ่มบัตร'}
+              </button>
+            </form>
+          ) : null}
+
+          <div className="grid grid-cols-2 gap-3">
           {fields.map((field) => (
             <WarrantyField
               key={field.label}
@@ -541,10 +721,11 @@ function WarrantyStatusPage({
               value={field.value}
             />
           ))}
+          </div>
         </div>
 
-        {registration.remarks ? (
-          <WarrantyField label="หมายเหตุ" value={registration.remarks} />
+        {activeRegistration.remarks ? (
+          <WarrantyField label="หมายเหตุ" value={activeRegistration.remarks} />
         ) : null}
 
         <button
