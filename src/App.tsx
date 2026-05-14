@@ -644,7 +644,6 @@ function WarrantyStatusPage({
               src={warrantyCardBackground}
             />
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.82),rgba(0,0,0,0.46)_52%,rgba(0,0,0,0.82))]" />
-            <div className="absolute inset-x-0 bottom-0 h-6 bg-[#090909]" />
             <div className="relative flex flex-1 flex-col items-center justify-center gap-2">
               <span className="grid size-12 place-items-center rounded-2xl border border-[#ff4038]/45 bg-[#ff4038]/12 text-3xl font-black text-[#ff625d]">
                 +
@@ -747,7 +746,6 @@ function WarrantyVehicleCard({
           src={warrantyCardBackground}
         />
         <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
-        <div className="absolute inset-x-0 bottom-0 h-6 bg-[#080808]" />
 
         <div className="relative flex min-h-0 flex-1 flex-col justify-between">
           <div className="flex items-start justify-between gap-3">
