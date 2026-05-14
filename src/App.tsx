@@ -350,9 +350,23 @@ function App() {
     }
   }
 
+  const isWarrantyStatusPhase = phase === 'warranty-status'
+
   return (
-    <main className="min-h-dvh bg-[#070707] p-3 text-white">
-      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col gap-2">
+    <main
+      className={[
+        'min-h-dvh bg-[#070707] text-white',
+        isWarrantyStatusPhase ? 'p-0' : 'p-3',
+      ].join(' ')}
+    >
+      <div
+        className={[
+          'mx-auto flex w-full max-w-xl flex-col gap-2',
+          isWarrantyStatusPhase
+            ? 'min-h-dvh'
+            : 'min-h-[calc(100dvh-1.5rem)]',
+        ].join(' ')}
+      >
         {isCheckingMember ? (
           isCardEntry ? <WarrantyStatusSkeleton /> : <RegistrationGateSkeleton />
         ) : phase === 'warranty-status' && warrantyRegistration ? (
@@ -587,9 +601,9 @@ function WarrantyStatusPage({
   }
 
   return (
-    <section className="flex min-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
-        <div className="flex items-center gap-3">
+    <section className="flex min-h-dvh flex-col overflow-hidden border-x border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] backdrop-blur">
+        <div className="flex min-h-14 items-center justify-center gap-3">
           <img
             alt=""
             className="size-11 shrink-0 rounded-xl border border-white/12 object-cover"
@@ -618,27 +632,30 @@ function WarrantyStatusPage({
           />
         ))}
 
-        <div className="relative overflow-hidden rounded-2xl border border-dashed border-[#ff4038]/45 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
-          <img
-            alt=""
-            className="absolute inset-0 size-full object-fill opacity-50"
-            src={warrantyCardBackground}
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.82),rgba(0,0,0,0.46)_52%,rgba(0,0,0,0.82))]" />
+        <div className="overflow-hidden rounded-2xl border border-dashed border-[#ff4038]/45 bg-[#090909] shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
           <button
-            className="relative flex aspect-[667/374] min-h-[12.5rem] w-full flex-col items-center justify-center gap-2 p-5 text-center transition active:scale-[0.99]"
+            className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden p-5 text-center transition active:scale-[0.99]"
             onClick={() => setIsAddingSerial((current) => !current)}
             type="button"
           >
-            <span className="grid size-12 place-items-center rounded-2xl border border-[#ff4038]/45 bg-[#ff4038]/12 text-3xl font-black text-[#ff625d]">
-              +
-            </span>
-            <span className="text-xl font-black text-white">
-              เพิ่มบัตรรับประกัน
-            </span>
-            <span className="text-sm font-bold text-white/54">
-              กรอก Serial Number สำหรับรถคันใหม่
-            </span>
+            <img
+              alt=""
+              className="absolute inset-0 size-full object-fill opacity-50"
+              src={warrantyCardBackground}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.82),rgba(0,0,0,0.46)_52%,rgba(0,0,0,0.82))]" />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-[#090909]" />
+            <div className="relative flex flex-1 flex-col items-center justify-center gap-2">
+              <span className="grid size-12 place-items-center rounded-2xl border border-[#ff4038]/45 bg-[#ff4038]/12 text-3xl font-black text-[#ff625d]">
+                +
+              </span>
+              <span className="text-xl font-black text-white">
+                เพิ่มบัตรรับประกัน
+              </span>
+              <span className="text-sm font-bold text-white/54">
+                กรอก Serial Number สำหรับรถคันใหม่
+              </span>
+            </div>
           </button>
 
           {isAddingSerial ? (
@@ -717,10 +734,10 @@ function WarrantyVehicleCard({
   ]
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
+    <article className="overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#080808] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
       <button
         aria-expanded={isExpanded}
-        className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden p-4 text-left transition active:scale-[0.99]"
+        className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden bg-[#080808] p-4 text-left transition active:scale-[0.99]"
         onClick={onToggle}
         type="button"
       >
@@ -730,6 +747,7 @@ function WarrantyVehicleCard({
           src={warrantyCardBackground}
         />
         <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
+        <div className="absolute inset-x-0 bottom-0 h-6 bg-[#080808]" />
 
         <div className="relative flex min-h-0 flex-1 flex-col justify-between">
           <div className="flex items-start justify-between gap-3">
@@ -777,7 +795,7 @@ function WarrantyVehicleCard({
         ].join(' ')}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="grid grid-cols-2 gap-2 border-t border-white/10 bg-black/28 p-4 backdrop-blur-[2px]">
+          <div className="grid grid-cols-2 gap-2 border-t border-white/10 bg-[#080808] p-4">
             {fields.map((field) => (
               <WarrantyCardField
                 key={field.label}
