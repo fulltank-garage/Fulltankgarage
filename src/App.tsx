@@ -621,12 +621,14 @@ function WarrantyStatusPage({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
-        <div
-          className="relative aspect-[667/374] overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] bg-cover bg-center p-4 shadow-[0_16px_38px_rgba(255,42,35,0.16)]"
-          style={{ backgroundImage: `url(${warrantyCardBackground})` }}
-        >
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.68),rgba(0,0,0,0.1)_54%,rgba(0,0,0,0.62))]" />
-          <div className="relative flex h-full flex-col justify-between">
+        <div className="relative min-h-[34rem] overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
+          <img
+            alt=""
+            className="absolute inset-0 size-full object-fill"
+            src={warrantyCardBackground}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
+          <div className="relative flex min-h-[32rem] flex-col justify-between">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
@@ -641,11 +643,17 @@ function WarrantyStatusPage({
               </span>
             </div>
 
-            <div className="min-w-0">
-              <p className="truncate text-xl font-black text-white">
-                {displayName}
-              </p>
-              <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+            <div className="min-w-0 space-y-3">
+              <div>
+                <p className="truncate text-xl font-black text-white">
+                  {displayName}
+                </p>
+                <p className="mt-1 truncate text-sm font-bold text-white/62">
+                  {selectedVehicleTitle}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
                 <div className="min-w-0">
                   <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
                     Serial Number
@@ -658,6 +666,23 @@ function WarrantyStatusPage({
                   {warrantyCount} ใบ
                 </p>
               </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {fields.slice(1).map((field) => (
+                  <WarrantyCardField
+                    key={field.label}
+                    label={field.label}
+                    value={field.value}
+                  />
+                ))}
+              </div>
+
+              {activeRegistration.remarks ? (
+                <WarrantyCardField
+                  label="หมายเหตุ"
+                  value={activeRegistration.remarks}
+                />
+              ) : null}
             </div>
           </div>
         </div>
@@ -697,25 +722,17 @@ function WarrantyStatusPage({
         ) : null}
 
         <div className="rounded-2xl border border-white/10 bg-[#0b0b0b] p-3">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-white/42">บัตรที่เลือก</p>
-              <p className="truncate text-lg font-black text-white">
-                {selectedVehicleTitle}
-              </p>
-            </div>
-            <button
-              className="shrink-0 rounded-xl border border-[#ff4038]/45 px-3 py-2 text-xs font-black text-[#ff625d]"
-              onClick={() => setIsAddingSerial((current) => !current)}
-              type="button"
-            >
-              + เพิ่มบัตร
-            </button>
-          </div>
+          <button
+            className="h-11 w-full rounded-xl border border-[#ff4038]/45 text-sm font-black text-[#ff625d]"
+            onClick={() => setIsAddingSerial((current) => !current)}
+            type="button"
+          >
+            + เพิ่มบัตรรับประกัน
+          </button>
 
           {isAddingSerial ? (
             <form
-              className="mb-3 grid gap-2 rounded-xl border border-white/10 bg-[#151515] p-3"
+              className="mt-3 grid gap-2 rounded-xl border border-white/10 bg-[#151515] p-3"
               onSubmit={handleAddSerial}
             >
               <input
@@ -740,21 +757,7 @@ function WarrantyStatusPage({
               </button>
             </form>
           ) : null}
-
-          <div className="grid grid-cols-2 gap-3">
-          {fields.map((field) => (
-            <WarrantyField
-              key={field.label}
-              label={field.label}
-              value={field.value}
-            />
-          ))}
-          </div>
         </div>
-
-        {activeRegistration.remarks ? (
-          <WarrantyField label="หมายเหตุ" value={activeRegistration.remarks} />
-        ) : null}
 
         <button
           className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff4038] to-[#df160d] text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,58,53,0.24)]"
@@ -768,7 +771,7 @@ function WarrantyStatusPage({
   )
 }
 
-function WarrantyField({
+function WarrantyCardField({
   label,
   value,
 }: {
@@ -776,9 +779,9 @@ function WarrantyField({
   value?: string
 }) {
   return (
-    <div className="flex min-h-[5.25rem] min-w-0 flex-col justify-center rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
-      <p className="truncate text-xs font-semibold text-white/42">{label}</p>
-      <p className="mt-1 break-words text-base font-bold leading-6 text-white">
+    <div className="min-w-0 rounded-xl border border-white/10 bg-black/24 px-3 py-2 backdrop-blur-[2px]">
+      <p className="truncate text-[0.66rem] font-black text-white/42">{label}</p>
+      <p className="mt-1 break-words text-sm font-black leading-5 text-white">
         {getDisplayValue(value)}
       </p>
     </div>
