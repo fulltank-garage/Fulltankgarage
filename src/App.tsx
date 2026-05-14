@@ -627,7 +627,7 @@ function WarrantyStatusPage({
           />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-[#ff4038]">
-              FullTank Garage
+              FULLTANK GARAGE
             </p>
             <h1 className="truncate text-lg font-bold">
               บัตรรับประกันสินค้า
