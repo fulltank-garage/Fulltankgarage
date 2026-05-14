@@ -351,18 +351,19 @@ function App() {
   }
 
   const isWarrantyStatusPhase = phase === 'warranty-status'
+  const isWarrantySurface = isWarrantyStatusPhase || (isCheckingMember && isCardEntry)
 
   return (
     <main
       className={[
         'min-h-dvh bg-[#070707] text-white',
-        isWarrantyStatusPhase ? 'p-0' : 'p-3',
+        isWarrantySurface ? 'p-0' : 'p-3',
       ].join(' ')}
     >
       <div
         className={[
           'mx-auto flex w-full max-w-xl flex-col gap-2',
-          isWarrantyStatusPhase
+          isWarrantySurface
             ? 'min-h-dvh'
             : 'min-h-[calc(100dvh-1.5rem)]',
         ].join(' ')}
@@ -375,7 +376,6 @@ function App() {
             key={warrantyRegistration.id}
             lineIdentity={lineIdentity}
             onAddSerial={handleWalletSerialSubmit}
-            onRefresh={loadRegistrationStatus}
             registrations={warrantyRegistrations}
             selectedRegistration={warrantyRegistration}
           />
@@ -511,47 +511,65 @@ function RegistrationGateSkeleton() {
 
 function WarrantyStatusSkeleton() {
   return (
-    <section className="flex min-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-[1.5rem] border border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+14px)] backdrop-blur">
-        <div className="flex items-center gap-3">
+    <section className="flex min-h-dvh flex-col bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/95 px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] backdrop-blur">
+        <div className="flex min-h-14 items-center justify-center gap-3">
           <div className="size-11 shrink-0 rounded-xl border border-white/12 skeleton-shimmer" />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <div className="h-4 w-32 rounded-xl skeleton-shimmer" />
             <div className="mt-2 h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
           </div>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+24px)]">
-        <div className="rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="h-7 w-44 max-w-full rounded-xl skeleton-shimmer" />
-              <div className="mt-3 h-4 w-56 max-w-full rounded-xl skeleton-shimmer" />
+      <div className="flex min-h-0 flex-1 flex-col gap-3 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
+        <div className="overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#080808] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
+          <div className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden bg-[#080808] p-4">
+            <img
+              alt=""
+              className="absolute inset-0 size-full object-fill opacity-40"
+              src={warrantyCardBackground}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.82),rgba(0,0,0,0.42)_52%,rgba(0,0,0,0.78))]" />
+
+            <div className="relative flex min-h-0 flex-1 flex-col justify-between">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="h-3 w-32 rounded-xl skeleton-shimmer" />
+                  <div className="mt-3 h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
+                </div>
+                <div className="h-6 w-20 shrink-0 rounded-full skeleton-shimmer" />
+              </div>
+
+              <div className="min-w-0 space-y-3">
+                <div>
+                  <div className="h-6 w-48 max-w-full rounded-xl skeleton-shimmer" />
+                  <div className="mt-2 h-4 w-32 rounded-xl skeleton-shimmer" />
+                </div>
+                <div>
+                  <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
+                  <div className="mt-2 h-5 w-40 max-w-full rounded-xl skeleton-shimmer" />
+                </div>
+              </div>
             </div>
-            <div className="h-6 w-20 shrink-0 rounded-full skeleton-shimmer" />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: 6 }, (_, index) => (
-            <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3" key={index}>
-              <div className="h-3 w-20 rounded-xl skeleton-shimmer" />
-              <div className="mt-3 h-5 w-full rounded-xl skeleton-shimmer" />
+        <div className="overflow-hidden rounded-2xl border border-dashed border-[#ff4038]/45 bg-[#090909] shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
+          <div className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden p-5 text-center">
+            <img
+              alt=""
+              className="absolute inset-0 size-full object-fill opacity-30"
+              src={warrantyCardBackground}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.86),rgba(0,0,0,0.5)_52%,rgba(0,0,0,0.86))]" />
+            <div className="relative flex flex-1 flex-col items-center justify-center gap-2">
+              <div className="size-12 rounded-2xl skeleton-shimmer" />
+              <div className="h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
+              <div className="h-4 w-52 max-w-full rounded-xl skeleton-shimmer" />
             </div>
-          ))}
+          </div>
         </div>
-
-        <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
-          <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
-          <div className="mt-3 h-5 w-3/4 rounded-xl skeleton-shimmer" />
-        </div>
-        <div className="min-w-0 rounded-xl border border-white/10 bg-[#0d0d0d] px-3 py-3">
-          <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
-          <div className="mt-3 h-5 w-2/3 rounded-xl skeleton-shimmer" />
-        </div>
-
-        <div className="h-12 w-full rounded-xl skeleton-shimmer" />
       </div>
     </section>
   )
@@ -561,14 +579,12 @@ function WarrantyStatusPage({
   isCheckingSerial,
   lineIdentity,
   onAddSerial,
-  onRefresh,
   registrations,
   selectedRegistration,
 }: {
   isCheckingSerial: boolean
   lineIdentity: LineIdentity | null
   onAddSerial: (serialNumber: string) => Promise<void>
-  onRefresh: () => Promise<void>
   registrations: WarrantyRegistration[]
   selectedRegistration: WarrantyRegistration
 }) {
@@ -686,13 +702,6 @@ function WarrantyStatusPage({
           ) : null}
         </div>
 
-        <button
-          className="h-12 w-full rounded-xl bg-gradient-to-r from-[#ff4038] to-[#df160d] text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,58,53,0.24)]"
-          onClick={() => void onRefresh()}
-          type="button"
-        >
-          อัปเดตข้อมูลบัตร
-        </button>
       </div>
     </section>
   )
