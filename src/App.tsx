@@ -351,7 +351,8 @@ function App() {
   }
 
   const isWarrantyStatusPhase = phase === 'warranty-status'
-  const isWarrantySurface = isWarrantyStatusPhase || (isCheckingMember && isCardEntry)
+  const isWarrantySurface =
+    isWarrantyStatusPhase || (isCheckingMember && isCardEntry)
 
   return (
     <main
@@ -514,10 +515,18 @@ function WarrantyStatusSkeleton() {
     <section className="flex min-h-dvh flex-col bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/95 px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] backdrop-blur">
         <div className="flex min-h-14 items-center justify-center gap-3">
-          <div className="size-11 shrink-0 rounded-xl border border-white/12 skeleton-shimmer" />
+          <img
+            alt=""
+            className="size-11 shrink-0 rounded-xl border border-white/12 object-cover"
+            src={fulltankGarageLogo}
+          />
           <div className="min-w-0">
-            <div className="h-4 w-32 rounded-xl skeleton-shimmer" />
-            <div className="mt-2 h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
+            <p className="truncate text-sm font-semibold text-[#ff4038]">
+              FULLTANK GARAGE
+            </p>
+            <h1 className="truncate text-lg font-bold">
+              บัตรรับประกันสินค้า
+            </h1>
           </div>
         </div>
       </header>
@@ -534,11 +543,24 @@ function WarrantyStatusSkeleton() {
 
             <div className="relative flex min-h-0 flex-1 flex-col justify-between">
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="h-3 w-32 rounded-xl skeleton-shimmer" />
-                  <div className="mt-3 h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <img
+                    alt=""
+                    className="size-10 shrink-0 rounded-lg border border-white/12 object-cover"
+                    src={fulltankGarageLogo}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-black uppercase tracking-normal text-white/58">
+                      FullTank Garage
+                    </p>
+                    <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
+                      บัตรรับประกันสินค้า
+                    </h2>
+                  </div>
                 </div>
-                <div className="h-6 w-20 shrink-0 rounded-full skeleton-shimmer" />
+                <span className="shrink-0 rounded-full bg-[#00d695] px-3 py-1 text-xs font-black text-white">
+                  ใช้งานได้
+                </span>
               </div>
 
               <div className="min-w-0 space-y-3">
@@ -547,7 +569,9 @@ function WarrantyStatusSkeleton() {
                   <div className="mt-2 h-4 w-32 rounded-xl skeleton-shimmer" />
                 </div>
                 <div>
-                  <div className="h-3 w-24 rounded-xl skeleton-shimmer" />
+                  <p className="text-[0.65rem] font-black uppercase tracking-normal text-white/45">
+                    Serial Number
+                  </p>
                   <div className="mt-2 h-5 w-40 max-w-full rounded-xl skeleton-shimmer" />
                 </div>
               </div>
@@ -564,9 +588,15 @@ function WarrantyStatusSkeleton() {
             />
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.86),rgba(0,0,0,0.5)_52%,rgba(0,0,0,0.86))]" />
             <div className="relative flex flex-1 flex-col items-center justify-center gap-2">
-              <div className="size-12 rounded-2xl skeleton-shimmer" />
-              <div className="h-6 w-44 max-w-full rounded-xl skeleton-shimmer" />
-              <div className="h-4 w-52 max-w-full rounded-xl skeleton-shimmer" />
+              <span className="grid size-12 place-items-center rounded-2xl border border-[#ff4038]/45 bg-[#ff4038]/12 text-3xl font-black text-[#ff625d]">
+                +
+              </span>
+              <span className="text-xl font-black text-white">
+                เพิ่มบัตรรับประกัน
+              </span>
+              <span className="text-sm font-bold text-white/54">
+                กรอก Serial Number สำหรับรถคันใหม่
+              </span>
             </div>
           </div>
         </div>
