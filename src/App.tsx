@@ -558,46 +558,33 @@ function WarrantyStatusPage({
   registrations: WarrantyRegistration[]
   selectedRegistration: WarrantyRegistration
 }) {
-  const [selectedId, setSelectedId] = useState(selectedRegistration.id)
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
   const [isAddingSerial, setIsAddingSerial] = useState(false)
   const [walletSerialInput, setWalletSerialInput] = useState('')
-  const activeRegistration =
-    registrations.find((item) => item.id === selectedId) ||
-    selectedRegistration ||
-    registrations[0]
-
-  const displayName =
-    activeRegistration.customerName ||
+  const visibleRegistrations =
+    registrations.length > 0 ? registrations : [selectedRegistration]
+  const displayNameFallback =
     lineIdentity?.lineDisplayName ||
     'FullTank Customer'
-  const warrantyCount = Math.max(registrations.length, 1)
-  const selectedVehicleTitle =
-    activeRegistration.licensePlate ||
-    activeRegistration.carModel ||
-    activeRegistration.serialNumber
+  const warrantyCount = Math.max(visibleRegistrations.length, 1)
 
-  const fields = [
-    { label: 'Serial Number', value: activeRegistration.serialNumber },
-    { label: 'เบอร์โทร', value: activeRegistration.phone },
-    { label: 'รุ่นรถ', value: activeRegistration.carModel },
-    { label: 'ทะเบียนรถ', value: activeRegistration.licensePlate },
-    {
-      label: 'ฟิล์ม',
-      value: [activeRegistration.filmBrand, activeRegistration.filmModel]
-        .filter(Boolean)
-        .join(' '),
-    },
-    {
-      label: 'วันที่ติดตั้ง',
-      value: formatThaiDate(activeRegistration.installDate),
-    },
-    { label: 'สาขาที่ติดตั้ง', value: activeRegistration.branch },
-    { label: 'ผู้ติดตั้ง', value: activeRegistration.installerName },
-  ]
+  const toggleExpanded = (id: number) => {
+    setExpandedIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
   const handleAddSerial = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     await onAddSerial(walletSerialInput)
     setWalletSerialInput('')
+    setIsAddingSerial(false)
   }
 
   return (
@@ -620,119 +607,45 @@ function WarrantyStatusPage({
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
-        <div className="relative min-h-[34rem] overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] p-4 shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+18px)]">
+        {visibleRegistrations.map((registration, index) => (
+          <WarrantyVehicleCard
+            displayNameFallback={displayNameFallback}
+            index={index}
+            isExpanded={expandedIds.has(registration.id)}
+            key={registration.id}
+            onToggle={() => toggleExpanded(registration.id)}
+            registration={registration}
+            warrantyCount={warrantyCount}
+          />
+        ))}
+
+        <div className="relative overflow-hidden rounded-2xl border border-dashed border-[#ff4038]/45 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.12)]">
           <img
             alt=""
-            className="absolute inset-0 size-full object-fill"
+            className="absolute inset-0 size-full object-fill opacity-50"
             src={warrantyCardBackground}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
-          <div className="relative flex min-h-[32rem] flex-col justify-between">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
-                  FullTank Garage
-                </p>
-                <h2 className="mt-1 truncate text-2xl font-black leading-tight text-white">
-                  บัตรรับประกันสินค้า
-                </h2>
-              </div>
-              <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
-                ใช้งานได้
-              </span>
-            </div>
-
-            <div className="min-w-0 space-y-3">
-              <div>
-                <p className="truncate text-xl font-black text-white">
-                  {displayName}
-                </p>
-                <p className="mt-1 truncate text-sm font-bold text-white/62">
-                  {selectedVehicleTitle}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
-                <div className="min-w-0">
-                  <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
-                    Serial Number
-                  </p>
-                  <p className="truncate text-base font-black tracking-wide text-white">
-                    {activeRegistration.serialNumber}
-                  </p>
-                </div>
-                <p className="rounded-full border border-white/16 bg-black/24 px-3 py-1 text-xs font-black text-white/78">
-                  {warrantyCount} ใบ
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {fields.slice(1).map((field) => (
-                  <WarrantyCardField
-                    key={field.label}
-                    label={field.label}
-                    value={field.value}
-                  />
-                ))}
-              </div>
-
-              {activeRegistration.remarks ? (
-                <WarrantyCardField
-                  label="หมายเหตุ"
-                  value={activeRegistration.remarks}
-                />
-              ) : null}
-            </div>
-          </div>
-        </div>
-
-        {registrations.length > 1 ? (
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-            {registrations.map((item, index) => {
-              const isSelected = item.id === activeRegistration.id
-              const vehicleTitle =
-                item.licensePlate || item.carModel || `คันที่ ${index + 1}`
-
-              return (
-                <button
-                  className={[
-                    'min-w-[10.75rem] rounded-2xl border p-3 text-left transition',
-                    isSelected
-                      ? 'border-[#ff4038] bg-[#251211] shadow-[0_12px_30px_rgba(255,58,53,0.18)]'
-                      : 'border-white/10 bg-[#0d0d0d]',
-                  ].join(' ')}
-                  key={item.id}
-                  onClick={() => setSelectedId(item.id)}
-                  type="button"
-                >
-                  <p className="truncate text-sm font-black text-white">
-                    {vehicleTitle}
-                  </p>
-                  <p className="mt-1 truncate text-xs font-semibold text-white/48">
-                    {item.filmBrand || 'FullTank'} {item.filmModel || ''}
-                  </p>
-                  <p className="mt-2 truncate text-xs font-bold text-[#ff625d]">
-                    {item.serialNumber}
-                  </p>
-                </button>
-              )
-            })}
-          </div>
-        ) : null}
-
-        <div className="rounded-2xl border border-white/10 bg-[#0b0b0b] p-3">
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.82),rgba(0,0,0,0.46)_52%,rgba(0,0,0,0.82))]" />
           <button
-            className="h-11 w-full rounded-xl border border-[#ff4038]/45 text-sm font-black text-[#ff625d]"
+            className="relative flex aspect-[667/374] min-h-[12.5rem] w-full flex-col items-center justify-center gap-2 p-5 text-center transition active:scale-[0.99]"
             onClick={() => setIsAddingSerial((current) => !current)}
             type="button"
           >
-            + เพิ่มบัตรรับประกัน
+            <span className="grid size-12 place-items-center rounded-2xl border border-[#ff4038]/45 bg-[#ff4038]/12 text-3xl font-black text-[#ff625d]">
+              +
+            </span>
+            <span className="text-xl font-black text-white">
+              เพิ่มบัตรรับประกัน
+            </span>
+            <span className="text-sm font-bold text-white/54">
+              กรอก Serial Number สำหรับรถคันใหม่
+            </span>
           </button>
 
           {isAddingSerial ? (
             <form
-              className="mt-3 grid gap-2 rounded-xl border border-white/10 bg-[#151515] p-3"
+              className="relative grid gap-2 border-t border-white/10 bg-black/32 p-4 backdrop-blur-[2px]"
               onSubmit={handleAddSerial}
             >
               <input
@@ -768,6 +681,133 @@ function WarrantyStatusPage({
         </button>
       </div>
     </section>
+  )
+}
+
+function WarrantyVehicleCard({
+  displayNameFallback,
+  index,
+  isExpanded,
+  onToggle,
+  registration,
+  warrantyCount,
+}: {
+  displayNameFallback: string
+  index: number
+  isExpanded: boolean
+  onToggle: () => void
+  registration: WarrantyRegistration
+  warrantyCount: number
+}) {
+  const displayName = registration.customerName || displayNameFallback
+  const vehicleTitle =
+    registration.licensePlate || registration.carModel || `คันที่ ${index + 1}`
+  const fields = [
+    { label: 'เบอร์โทร', value: registration.phone },
+    { label: 'รุ่นรถ', value: registration.carModel },
+    { label: 'ทะเบียนรถ', value: registration.licensePlate },
+    {
+      label: 'ฟิล์ม',
+      value: [registration.filmBrand, registration.filmModel]
+        .filter(Boolean)
+        .join(' '),
+    },
+    {
+      label: 'วันที่ติดตั้ง',
+      value: formatThaiDate(registration.installDate),
+    },
+    { label: 'สาขาที่ติดตั้ง', value: registration.branch },
+    { label: 'ผู้ติดตั้ง', value: registration.installerName },
+  ]
+
+  return (
+    <article className="relative overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
+      <img
+        alt=""
+        className="absolute inset-0 size-full object-fill"
+        src={warrantyCardBackground}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
+
+      <button
+        aria-expanded={isExpanded}
+        className="relative flex aspect-[667/374] min-h-[12.5rem] w-full flex-col justify-between p-4 text-left transition active:scale-[0.99]"
+        onClick={onToggle}
+        type="button"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
+              FullTank Garage
+            </p>
+            <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
+              บัตรรับประกันสินค้า
+            </h2>
+          </div>
+          <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
+            ใช้งานได้
+          </span>
+        </div>
+
+        <div className="min-w-0 space-y-3">
+          <div>
+            <p className="truncate text-xl font-black text-white">
+              {displayName}
+            </p>
+            <p className="mt-1 truncate text-sm font-bold text-white/62">
+              {vehicleTitle}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
+                Serial Number
+              </p>
+              <p className="truncate text-base font-black tracking-wide text-white">
+                {registration.serialNumber}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <p className="rounded-full border border-white/16 bg-black/24 px-3 py-1 text-xs font-black text-white/78">
+                {warrantyCount} ใบ
+              </p>
+              <span className="grid size-7 place-items-center rounded-full border border-white/16 bg-black/24 text-sm font-black text-white/78">
+                {isExpanded ? '−' : '+'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </button>
+
+      <div
+        className={[
+          'relative grid transition-[grid-template-rows] duration-300 ease-out',
+          isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+        ].join(' ')}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="grid grid-cols-2 gap-2 border-t border-white/10 bg-black/28 p-4 backdrop-blur-[2px]">
+            {fields.map((field) => (
+              <WarrantyCardField
+                key={field.label}
+                label={field.label}
+                value={field.value}
+              />
+            ))}
+
+            {registration.remarks ? (
+              <div className="col-span-2">
+                <WarrantyCardField
+                  label="หมายเหตุ"
+                  value={registration.remarks}
+                />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </article>
   )
 }
 
