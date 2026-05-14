@@ -566,7 +566,6 @@ function WarrantyStatusPage({
   const displayNameFallback =
     lineIdentity?.lineDisplayName ||
     'FullTank Customer'
-  const warrantyCount = Math.max(visibleRegistrations.length, 1)
 
   const toggleExpanded = (id: number) => {
     setExpandedIds((current) => {
@@ -616,7 +615,6 @@ function WarrantyStatusPage({
             key={registration.id}
             onToggle={() => toggleExpanded(registration.id)}
             registration={registration}
-            warrantyCount={warrantyCount}
           />
         ))}
 
@@ -690,14 +688,12 @@ function WarrantyVehicleCard({
   isExpanded,
   onToggle,
   registration,
-  warrantyCount,
 }: {
   displayNameFallback: string
   index: number
   isExpanded: boolean
   onToggle: () => void
   registration: WarrantyRegistration
-  warrantyCount: number
 }) {
   const displayName = registration.customerName || displayNameFallback
   const vehicleTitle =
@@ -721,60 +717,54 @@ function WarrantyVehicleCard({
   ]
 
   return (
-    <article className="relative overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
-      <img
-        alt=""
-        className="absolute inset-0 size-full object-fill"
-        src={warrantyCardBackground}
-      />
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
-
+    <article className="overflow-hidden rounded-2xl border border-[#ff3a35]/35 bg-[#151515] shadow-[0_16px_38px_rgba(255,42,35,0.16)]">
       <button
         aria-expanded={isExpanded}
-        className="relative flex aspect-[667/374] min-h-[12.5rem] w-full flex-col justify-between p-4 text-left transition active:scale-[0.99]"
+        className="relative flex aspect-[667/374] min-h-[12.5rem] w-full overflow-hidden p-4 text-left transition active:scale-[0.99]"
         onClick={onToggle}
         type="button"
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
-              FullTank Garage
-            </p>
-            <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
-              บัตรรับประกันสินค้า
-            </h2>
-          </div>
-          <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
-            ใช้งานได้
-          </span>
-        </div>
+        <img
+          alt=""
+          className="absolute inset-0 size-full object-fill"
+          src={warrantyCardBackground}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,0,0,0.76),rgba(0,0,0,0.2)_52%,rgba(0,0,0,0.72))]" />
 
-        <div className="min-w-0 space-y-3">
-          <div>
-            <p className="truncate text-xl font-black text-white">
-              {displayName}
-            </p>
-            <p className="mt-1 truncate text-sm font-bold text-white/62">
-              {vehicleTitle}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+        <div className="relative flex min-h-0 flex-1 flex-col justify-between">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
-                Serial Number
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-white/58">
+                FullTank Garage
               </p>
-              <p className="truncate text-base font-black tracking-wide text-white">
-                {registration.serialNumber}
+              <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
+                บัตรรับประกันสินค้า
+              </h2>
+            </div>
+            <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
+              ใช้งานได้
+            </span>
+          </div>
+
+          <div className="min-w-0 space-y-3">
+            <div>
+              <p className="truncate text-xl font-black text-white">
+                {displayName}
+              </p>
+              <p className="mt-1 truncate text-sm font-bold text-white/62">
+                {vehicleTitle}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <p className="rounded-full border border-white/16 bg-black/24 px-3 py-1 text-xs font-black text-white/78">
-                {warrantyCount} ใบ
-              </p>
-              <span className="grid size-7 place-items-center rounded-full border border-white/16 bg-black/24 text-sm font-black text-white/78">
-                {isExpanded ? '−' : '+'}
-              </span>
+
+            <div className="min-w-0">
+              <div className="min-w-0">
+                <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-white/45">
+                  Serial Number
+                </p>
+                <p className="truncate text-base font-black tracking-wide text-white">
+                  {registration.serialNumber}
+                </p>
+              </div>
             </div>
           </div>
         </div>
