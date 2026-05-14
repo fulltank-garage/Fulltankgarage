@@ -766,7 +766,7 @@ function WarrantyVehicleCard({
                 บัตรรับประกันสินค้า
               </h2>
             </div>
-            <span className="shrink-0 rounded-full bg-emerald-400/18 px-3 py-1 text-xs font-black text-emerald-200">
+            <span className="shrink-0 rounded-full bg-[#00d695] px-3 py-1 text-xs font-black text-white">
               ใช้งานได้
             </span>
           </div>
