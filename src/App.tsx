@@ -758,13 +758,20 @@ function WarrantyVehicleCard({
 
         <div className="relative flex min-h-0 flex-1 flex-col justify-between">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-black uppercase tracking-normal text-white/58">
-                FullTank Garage
-              </p>
-              <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
-                บัตรรับประกันสินค้า
-              </h2>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <img
+                alt=""
+                className="size-10 shrink-0 rounded-lg border border-white/12 object-cover"
+                src={fulltankGarageLogo}
+              />
+              <div className="min-w-0">
+                <p className="truncate text-xs font-black uppercase tracking-normal text-white/58">
+                  FullTank Garage
+                </p>
+                <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
+                  บัตรรับประกันสินค้า
+                </h2>
+              </div>
             </div>
             <span className="shrink-0 rounded-full bg-[#00d695] px-3 py-1 text-xs font-black text-white">
               ใช้งานได้
