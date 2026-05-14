@@ -601,7 +601,7 @@ function WarrantyStatusPage({
   }
 
   return (
-    <section className="flex min-h-dvh flex-col border-x border-white/12 bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+    <section className="flex min-h-dvh flex-col bg-[#111] text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/95 px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)] backdrop-blur">
         <div className="flex min-h-14 items-center justify-center gap-3">
           <img
