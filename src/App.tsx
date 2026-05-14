@@ -659,7 +659,7 @@ function WarrantyStatusPage({
 
           {isAddingSerial ? (
             <form
-              className="relative grid gap-2 border-t border-white/10 bg-black/32 p-4 backdrop-blur-[2px]"
+              className="relative grid gap-2 bg-black/32 p-4 backdrop-blur-[2px]"
               onSubmit={handleAddSerial}
             >
               <input
@@ -793,7 +793,7 @@ function WarrantyVehicleCard({
         ].join(' ')}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="grid grid-cols-2 gap-2 border-t border-white/10 bg-[#080808] p-4">
+          <div className="grid grid-cols-2 gap-2 bg-[#080808] p-4">
             {fields.map((field) => (
               <WarrantyCardField
                 key={field.label}
