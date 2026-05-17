@@ -51,6 +51,11 @@ const onlyDigits = (value: string) => value.replace(/\D/g, '')
 const onlyEnglishLettersAndDigits = (value: string) =>
   value.replace(/[^a-zA-Z0-9]/g, '')
 
+const getInitialSerialFromUrl = () => {
+  const params = new URLSearchParams(window.location.search)
+  return onlyEnglishLettersAndDigits(params.get('serial') || '').toUpperCase()
+}
+
 const getInputClass = (hasError?: boolean) =>
   [
     'h-12 w-full rounded-xl border bg-[#101010] px-4 text-base text-white outline-none transition',
@@ -73,7 +78,7 @@ const getApiErrorMessage = (error: unknown) => {
 
 function App() {
   const [phase, setPhase] = useState<Phase>('serial')
-  const [serialInput, setSerialInput] = useState('')
+  const [serialInput, setSerialInput] = useState(getInitialSerialFromUrl)
   const [isConsentAccepted, setIsConsentAccepted] = useState(false)
   const [form, setForm] = useState<RegistrationForm>(initialForm)
   const [registeredMember, setRegisteredMember] =
