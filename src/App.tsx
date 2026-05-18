@@ -556,7 +556,7 @@ function WarrantyStatusSkeleton() {
                   />
                   <div className="min-w-0">
                     <p className="truncate text-xs font-black uppercase tracking-normal text-white/58">
-                      FullTank Garage
+                      FULLTANK Garage
                     </p>
                     <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
                       บัตรรับประกันสินค้า
@@ -630,7 +630,7 @@ function WarrantyStatusPage({
     registrations.length > 0 ? registrations : [selectedRegistration]
   const displayNameFallback =
     lineIdentity?.lineDisplayName ||
-    'FullTank Customer'
+    'FULLTANK Customer'
 
   const toggleExpanded = (id: number) => {
     setExpandedIds((current) => {
@@ -801,7 +801,7 @@ function WarrantyVehicleCard({
               />
               <div className="min-w-0">
                 <p className="truncate text-xs font-black uppercase tracking-normal text-white/58">
-                  FullTank Garage
+                  FULLTANK Garage
                 </p>
                 <h2 className="mt-1 truncate text-xl font-black leading-tight text-white">
                   บัตรรับประกันสินค้า
@@ -899,7 +899,7 @@ function RegistrationStatusPage({
     .filter(Boolean)
     .join(' ')
   const displayName =
-    fullName || lineIdentity?.lineDisplayName || member.nickname || 'FullTank Member'
+    fullName || lineIdentity?.lineDisplayName || member.nickname || 'FULLTANK Member'
   const avatarUrl = lineIdentity?.linePictureUrl
   const storefrontImage = member.storefrontImageUrl || member.storefrontImage
   const fields = [
@@ -921,7 +921,7 @@ function RegistrationStatusPage({
           />
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-[#8a705b]">
-              FullTank Garage
+              FULLTANK Garage
             </p>
             <h1 className="truncate text-lg font-semibold text-[#4b3527]">
               สถานะการลงทะเบียน
@@ -1063,7 +1063,7 @@ function SerialGate({
         onSubmit={onSubmit}
       >
         <img
-          alt="FullTank Garage"
+          alt="FULLTANK Garage"
           className="mx-auto aspect-square w-[clamp(8.75rem,22dvh,12.5rem)] max-w-[58%] rounded-xl object-cover shadow-[0_12px_32px_rgba(0,0,0,0.38)]"
           src={fulltankGarageLogo}
         />
@@ -1190,7 +1190,7 @@ function WarrantyForm({
             label="แบรนด์ฟิล์ม"
             name="filmBrand"
             onChange={onChange}
-            placeholder="FullTank"
+            placeholder="FULLTANK"
             value={form.filmBrand}
           />
           <Field
@@ -1377,7 +1377,7 @@ function CompanyFooter({ fillAvailable = false }: { fillAvailable?: boolean }) {
               : 'text-sm leading-5',
           ].join(' ')}
         >
-          FullTank Garage Co., LTD
+          FULLTANK Garage Co., LTD
         </p>
         <p
           className={[

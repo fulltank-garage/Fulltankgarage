@@ -1,6 +1,6 @@
-# FullTank Garage Warranty
+# FULLTANK Garage Warranty
 
-LINE LIFF app สำหรับตรวจ Serial Number และลงทะเบียนรับประกันสินค้าของ FullTank Garage
+LINE LIFF app สำหรับตรวจ Serial Number และลงทะเบียนรับประกันสินค้าของ FULLTANK Garage
 
 ## Environment
 

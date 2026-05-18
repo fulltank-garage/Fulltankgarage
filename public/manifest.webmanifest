@@ -1,7 +1,7 @@
 {
-  "name": "FullTank Garage Warranty",
-  "short_name": "FullTank",
-  "description": "FullTank Garage warranty registration",
+  "name": "FULLTANK Garage Warranty",
+  "short_name": "FULLTANK",
+  "description": "FULLTANK Garage warranty registration",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
